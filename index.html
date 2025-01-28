@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Catch Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background-color: #87ceeb;
+            border: 2px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = 400;
+        canvas.height = 600;
+
+        const player = {
+            x: canvas.width / 2 - 25,
+            y: canvas.height - 50,
+            width: 50,
+            height: 50,
+            color: 'green',
+            speed: 5
+        };
+
+        const fallingObject = {
+            x: Math.random() * (canvas.width - 30),
+            y: 0,
+            width: 30,
+            height: 30,
+            color: 'red',
+            speed: 3
+        };
+
+        let score = 0;
+        let gameOver = false;
+
+        function drawRect(rect) {
+            ctx.fillStyle = rect.color;
+            ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+        }
+
+        function update() {
+            if (gameOver) return;
+
+            // Move falling object
+            fallingObject.y += fallingObject.speed;
+
+            // Check if the falling object goes off screen
+            if (fallingObject.y > canvas.height) {
+                fallingObject.y = 0;
+                fallingObject.x = Math.random() * (canvas.width - fallingObject.width);
+                gameOver = true;
+            }
+
+            // Check collision
+            if (
+                player.x < fallingObject.x + fallingObject.width &&
+                player.x + player.width > fallingObject.x &&
+                player.y < fallingObject.y + fallingObject.height &&
+                player.y + player.height > fallingObject.y
+            ) {
+                score++;
+                fallingObject.y = 0;
+                fallingObject.x = Math.random() * (canvas.width - fallingObject.width);
+            }
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw player and object
+            drawRect(player);
+            drawRect(fallingObject);
+
+            // Draw score
+            ctx.fillStyle = 'black';
+            ctx.font = '20px Arial';
+            ctx.fillText(`Score: ${score}`, 10, 30);
+
+            // Display game over
+            if (gameOver) {
+                ctx.fillStyle = 'red';
+                ctx.font = '30px Arial';
+                ctx.fillText('Game Over!', canvas.width / 2 - 80, canvas.height / 2);
+            }
+        }
+
+        function movePlayer(event) {
+            if (event.key === 'ArrowLeft' && player.x > 0) {
+                player.x -= player.speed;
+            } else if (event.key === 'ArrowRight' && player.x + player.width < canvas.width) {
+                player.x += player.speed;
+            }
+        }
+
+        document.addEventListener('keydown', movePlayer);
+
+        function gameLoop() {
+            update();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
