@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Catch Game</title>
+    <title>Kitchen Car Rush</title>
     <style>
         body {
             margin: 0;
@@ -11,6 +11,7 @@
             overflow: hidden;
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
+            text-align: center;
         }
         canvas {
             display: block;
@@ -18,17 +19,45 @@
             background-color: #87ceeb;
             border: 2px solid #333;
         }
+        .game-over {
+            display: none;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .shop-button {
+            background-color: #008CBA;
+        }
+        .shop-button:hover {
+            background-color: #007bb5;
+        }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
+    <div class="game-over">
+        <h1>Game Over!</h1>
+        <button id="playAgain">Play Again</button>
+        <button id="visitShop" class="shop-button">Visit Shop</button>
+    </div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        canvas.width = 400;
-        canvas.height = 600;
+        canvas.width = window.innerWidth < 400 ? window.innerWidth : 400;
+        canvas.height = window.innerHeight < 600 ? window.innerHeight : 600;
 
         const player = {
             x: canvas.width / 2 - 25,
@@ -59,17 +88,15 @@
         function update() {
             if (gameOver) return;
 
-            // Move falling object
             fallingObject.y += fallingObject.speed;
 
-            // Check if the falling object goes off screen
             if (fallingObject.y > canvas.height) {
                 fallingObject.y = 0;
                 fallingObject.x = Math.random() * (canvas.width - fallingObject.width);
                 gameOver = true;
+                endGame();
             }
 
-            // Check collision
             if (
                 player.x < fallingObject.x + fallingObject.width &&
                 player.x + player.width > fallingObject.x &&
@@ -81,24 +108,13 @@
                 fallingObject.x = Math.random() * (canvas.width - fallingObject.width);
             }
 
-            // Clear canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw player and object
             drawRect(player);
             drawRect(fallingObject);
 
-            // Draw score
             ctx.fillStyle = 'black';
-            ctx.font = '20px Arial';
+            ctx.font = `${Math.min(canvas.width, canvas.height) * 0.05}px Arial`;
             ctx.fillText(`Score: ${score}`, 10, 30);
-
-            // Display game over
-            if (gameOver) {
-                ctx.fillStyle = 'red';
-                ctx.font = '30px Arial';
-                ctx.fillText('Game Over!', canvas.width / 2 - 80, canvas.height / 2);
-            }
         }
 
         function movePlayer(event) {
@@ -111,10 +127,39 @@
 
         document.addEventListener('keydown', movePlayer);
 
+        document.addEventListener('touchstart', (event) => {
+            const touchX = event.touches[0].clientX;
+
+            if (touchX < canvas.width / 2 && player.x > 0) {
+                player.x -= player.speed;
+            } else if (touchX >= canvas.width / 2 && player.x + player.width < canvas.width) {
+                player.x += player.speed;
+            }
+        });
+
         function gameLoop() {
             update();
-            requestAnimationFrame(gameLoop);
+            if (!gameOver) {
+                requestAnimationFrame(gameLoop);
+            }
         }
+
+        function endGame() {
+            document.querySelector('.game-over').style.display = 'block';
+        }
+
+        document.getElementById('playAgain').addEventListener('click', () => {
+            score = 0;
+            gameOver = false;
+            fallingObject.y = 0;
+            fallingObject.x = Math.random() * (canvas.width - fallingObject.width);
+            document.querySelector('.game-over').style.display = 'none';
+            gameLoop();
+        });
+
+        document.getElementById('visitShop').addEventListener('click', () => {
+            window.location.href = 'https://shop.47markets.org/';
+        });
 
         gameLoop();
     </script>
