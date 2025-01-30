@@ -20,27 +20,6 @@
         .hidden {
             display: none;
         }
-        #startScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: black;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            z-index: 1000;
-        }
-        #startButton {
-            font-size: 24px;
-            padding: 15px 30px;
-            margin-top: 20px;
-            cursor: pointer;
-        }
         #gameOverScreen {
             position: absolute;
             top: 50%;
@@ -50,6 +29,7 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            display: none;
         }
         .gameOverButton {
             font-size: 24px;
@@ -60,15 +40,10 @@
     </style>
 </head>
 <body>
-    <div id="startScreen">
-        <h1>Onigiri Catcher</h1>
-        <p>おにぎりをキャッチして、お茶を避けろ！</p>
-        <button id="startButton">ゲームスタート</button>
-    </div>
-    <audio id="bgm" loop>
+    <audio id="bgm" loop autoplay>
         <source src="bgm.mp3" type="audio/mpeg">
     </audio>
-    <div id="gameOverScreen" class="hidden">
+    <div id="gameOverScreen">
         <h2>ゲームオーバー！</h2>
         <button class="gameOverButton" onclick="restartGame()">もう一度遊ぶ</button>
         <a href="https://www.instagram.com/47markets/" target="_blank">
@@ -82,7 +57,6 @@
         let onigiri, tea, player;
         let score = 0;
         let gameOver = false;
-        let gameStarted = false;
         let bgm;
 
         function preload() {
@@ -90,25 +64,16 @@
         }
 
         function setup() {
-            let cnv = createCanvas(400, 720);
-            cnv.parent(document.body);
+            createCanvas(400, 720);
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
             tea = new Item(random(width), 0, '🍵', 7);
-
-            document.getElementById("startButton").addEventListener("click", startGame);
-        }
-
-        function startGame() {
-            document.getElementById("startScreen").classList.add("hidden");
-            gameStarted = true;
             bgm.play();
-            loop();
         }
 
         function draw() {
             background('#FFA500');
-            if (gameStarted && !gameOver) {
+            if (!gameOver) {
                 player.show();
                 player.move();
                 onigiri.fall();
@@ -129,7 +94,7 @@
             }
             if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
                 gameOver = true;
-                document.getElementById("gameOverScreen").classList.remove("hidden");
+                document.getElementById("gameOverScreen").style.display = "block";
                 bgm.pause();
                 noLoop();
             }
@@ -140,7 +105,7 @@
             gameOver = false;
             onigiri.reset();
             tea.reset();
-            document.getElementById("gameOverScreen").classList.add("hidden");
+            document.getElementById("gameOverScreen").style.display = "none";
             bgm.play();
             loop();
         }
@@ -148,42 +113,6 @@
         function mousePressed() {
             if (gameOver) {
                 restartGame();
-            }
-        }
-
-        class Player {
-            constructor() {
-                this.x = width / 2;
-            }
-            show() {
-                textSize(32);
-                text('🚛', this.x, height - 50);
-            }
-            move() {
-                this.x = mouseX;
-            }
-        }
-
-        class Item {
-            constructor(x, y, emoji, speed) {
-                this.x = x;
-                this.y = y;
-                this.emoji = emoji;
-                this.speed = speed;
-            }
-            fall() {
-                this.y += this.speed;
-                if (this.y > height) {
-                    this.reset();
-                }
-            }
-            show() {
-                textSize(32);
-                text(this.emoji, this.x, this.y);
-            }
-            reset() {
-                this.x = random(width);
-                this.y = 0;
             }
         }
     </script>
