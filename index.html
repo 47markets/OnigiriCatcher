@@ -95,11 +95,15 @@
         }
 
         function startGame() {
-            document.getElementById("startScreen").classList.add("hidden");
-            gameStarted = true;
-            bgm.play();
-            loop();
-        }
+    document.getElementById("startScreen").classList.add("hidden");
+    gameStarted = true;
+    gameOver = false; // ゲームオーバーフラグをリセット
+    score = 0; // スコアをリセット
+    onigiri.reset(); // おにぎりの位置をリセット
+    tea.reset(); // お茶の位置をリセット
+    bgm.play();
+    loop();
+}
 
         function draw() {
             background(220);
@@ -118,10 +122,19 @@
         }
         
         function checkCollision() {
-            if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
-                score++;
-                onigiri.reset();
-            }
+    if (!gameStarted) return; // ゲームが開始していなければ処理を行わない
+
+    if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
+        score++;
+        onigiri.reset();
+    }
+    if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
+        gameOver = true;
+        document.getElementById("gameOverScreen").classList.remove("hidden");
+        bgm.pause();
+        noLoop();
+    }
+}
             if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
                 gameOver = true;
                 document.getElementById("gameOverScreen").classList.remove("hidden");
