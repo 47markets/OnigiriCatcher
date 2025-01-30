@@ -144,14 +144,15 @@
         }
         
         function restartGame() {
-            score = 0;
-            gameOver = false;
-            onigiri.reset();
-            tea.reset();
-            document.getElementById("gameOverScreen").classList.add("hidden");
-            bgm.play();
-            loop();
-        }
+    document.getElementById("gameOverScreen").classList.add("hidden");
+    gameStarted = true;
+    gameOver = false;
+    score = 0;
+    onigiri.reset();
+    tea.reset();
+    bgm.play();
+    loop();
+}
 
         function mousePressed() {
             if (gameOver) {
