@@ -67,7 +67,7 @@
         <button class="button" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
     </div>
     <script>
-        let onigiri, tea, player;
+        let onigiri, tea, extraTea, player;
         let score = 0;
         let gameOver = false;
         let gameStarted = false;
@@ -85,6 +85,7 @@
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', baseSpeed);
             tea = new Item(random(width), 0, '🍵', baseSpeed);
+            extraTea = null; // 追加のお茶はスコア5で出現
             noLoop();
         }
 
@@ -95,6 +96,9 @@
             score = 0;
             updateSpeed();
             onigiri.reset();
+                if (score === 5) {
+                    extraTea = new Item(random(width), 0, '🍵', tea.speed);
+                }
             tea.reset();
             bgm.play();
             loop();
@@ -114,7 +118,9 @@
                 onigiri.fall();
                 onigiri.show();
                 tea.fall();
+                if (extraTea) extraTea.fall();
                 tea.show();
+                if (extraTea) extraTea.show();
                 checkCollision();
                 updateSpeed();
                 fill(0);
@@ -131,7 +137,7 @@
                 onigiri.reset();
                 updateSpeed();
             }
-            if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
+            if (dist(player.x, height - 50, tea.x, tea.y) < 30 || (extraTea && dist(player.x, height - 50, extraTea.x, extraTea.y) < 30)) {
                 gameOver = true;
                 document.getElementById("gameOverScreen").classList.remove("hidden");
                 bgm.pause();
