@@ -35,14 +35,14 @@
     <h1 id="title">Onigiri Catcher</h1>
     <p id="instructions">おにぎりをキャッチして、お茶を避けろ！</p>
     <p id="countdown"></p>
-    <audio id="bgm" loop>
+    <audio id="bgm" loop autoplay>
         <source src="bgm.mp3" type="audio/mpeg">
     </audio>
     <div id="gameOverScreen" class="hidden">
         <h2>ゲームオーバー！</h2>
         <button onclick="restartGame()">もう一度遊ぶ</button>
-        <a href="https://www.instagram.com/47markets/" target="_blank"><button>Instagram</button></a>
-        <a href="https://shop.47markets.org/" target="_blank"><button>通販サイト</button></a>
+        <a href="https://www.instagram.com/47markets/" target="_blank" rel="noopener noreferrer"><button onclick="window.open('https://www.instagram.com/47markets/', '_blank')">Instagram</button></a>
+        <a href="https://shop.47markets.org/" target="_blank" rel="noopener noreferrer"><button onclick="window.open('https://shop.47markets.org/', '_blank')">通販サイト</button></a>
     </div>
     <script>
         let onigiri, tea, player;
@@ -61,19 +61,7 @@
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
             tea = new Item(random(width), 0, '🍵', 7);
-            
-            let countdownInterval = setInterval(() => {
-                document.getElementById("countdown").innerText = countdown;
-                countdown--;
-                if (countdown < 0) {
-                    clearInterval(countdownInterval);
-                    gameStarted = true;
-                    document.getElementById("title").classList.add("hidden");
-                    document.getElementById("instructions").classList.add("hidden");
-                    document.getElementById("countdown").classList.add("hidden");
-                    bgm.play();
-                }
-            }, 1000);
+            bgm.play();
         }
 
         function draw() {
