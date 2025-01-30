@@ -63,7 +63,7 @@
     <div id="startScreen">
         <h1>おにぎりラッシュ！</h1>
         <p>おにぎりをキャッチして、お茶を避けろ！</p>
-        <button id="startButton" onclick="startGame()">ゲームスタート</button>
+        <button id="startButton">ゲームスタート</button>
     </div>
     <audio id="bgm" loop>
         <source src="bgm.mp3" type="audio/mpeg">
@@ -84,22 +84,26 @@
         let gameOver = false;
         let gameStarted = false;
         let bgm;
-        
+
         function preload() {
             bgm = document.getElementById("bgm");
         }
 
         function setup() {
-            createCanvas(400, 720);
+            let cnv = createCanvas(400, 720);
+            cnv.parent(document.body);
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
             tea = new Item(random(width), 0, '🍵', 7);
+
+            document.getElementById("startButton").addEventListener("click", startGame);
         }
 
         function startGame() {
             document.getElementById("startScreen").classList.add("hidden");
             gameStarted = true;
             bgm.play();
+            loop();
         }
 
         function draw() {
@@ -127,6 +131,7 @@
                 gameOver = true;
                 document.getElementById("gameOverScreen").classList.remove("hidden");
                 bgm.pause();
+                noLoop();
             }
         }
         
@@ -137,6 +142,7 @@
             tea.reset();
             document.getElementById("gameOverScreen").classList.add("hidden");
             bgm.play();
+            loop();
         }
 
         function mousePressed() {
