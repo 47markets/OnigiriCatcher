@@ -25,30 +25,60 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .gameOverButton {
+            font-size: 28px;
+            padding: 20px 40px;
+            margin: 20px 0;
+            width: 300px;
+        }
+        #startScreen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
+        #startButton {
+            font-size: 24px;
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <h1 id="title">Onigiri Catcher</h1>
-    <p id="instructions">おにぎりをキャッチして、お茶を避けろ！</p>
-    <p id="countdown"></p>
-    <audio id="bgm" loop autoplay>
+    <div id="startScreen">
+        <h1>Onigiri Catcher</h1>
+        <p>おにぎりをキャッチして、お茶を避けろ！</p>
+        <button id="startButton" onclick="startGame()">ゲームスタート</button>
+    </div>
+    <audio id="bgm" loop>
         <source src="bgm.mp3" type="audio/mpeg">
     </audio>
     <div id="gameOverScreen" class="hidden">
         <h2>ゲームオーバー！</h2>
-        <button onclick="restartGame()">もう一度遊ぶ</button>
-        <a href="https://www.instagram.com/47markets/" target="_blank" rel="noopener noreferrer"><button onclick="window.open('https://www.instagram.com/47markets/', '_blank')">Instagram</button></a>
-        <a href="https://shop.47markets.org/" target="_blank" rel="noopener noreferrer"><button onclick="window.open('https://shop.47markets.org/', '_blank')">通販サイト</button></a>
+        <button class="gameOverButton" onclick="restartGame()">もう一度遊ぶ</button>
+        <a href="https://www.instagram.com/47markets/" target="_blank" rel="noopener noreferrer">
+            <button class="gameOverButton" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">Instagram</button>
+        </a>
+        <a href="https://shop.47markets.org/" target="_blank" rel="noopener noreferrer">
+            <button class="gameOverButton" onclick="window.open('https://shop.47markets.org/', '_blank')">通販サイト</button>
+        </a>
     </div>
     <script>
         let onigiri, tea, player;
         let score = 0;
         let gameOver = false;
-        let countdown = 3;
         let gameStarted = false;
         let bgm;
         
@@ -61,19 +91,14 @@
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
             tea = new Item(random(width), 0, '🍵', 7);
-            
-            let countdownInterval = setInterval(() => {
-                document.getElementById("countdown").innerText = countdown;
-                countdown--;
-                if (countdown < 0) {
-                    clearInterval(countdownInterval);
-                    gameStarted = true;
-                    document.getElementById("title").classList.add("hidden");
-                    document.getElementById("instructions").classList.add("hidden");
-                    document.getElementById("countdown").classList.add("hidden");
-                    bgm.play();
-                }
-            }, 1000);
+            noLoop();
+        }
+
+        function startGame() {
+            document.getElementById("startScreen").classList.add("hidden");
+            gameStarted = true;
+            bgm.play();
+            loop();
         }
 
         function draw() {
@@ -101,6 +126,7 @@
                 gameOver = true;
                 document.getElementById("gameOverScreen").classList.remove("hidden");
                 bgm.pause();
+                noLoop();
             }
         }
         
@@ -111,6 +137,7 @@
             tea.reset();
             document.getElementById("gameOverScreen").classList.add("hidden");
             bgm.play();
+            loop();
         }
 
         function mousePressed() {
@@ -122,42 +149,6 @@
         document.addEventListener("touchmove", function(event) {
             event.preventDefault(); // スクロールを完全に無効化
         }, { passive: false });
-
-        class Player {
-            constructor() {
-                this.x = width / 2;
-            }
-            show() {
-                textSize(32);
-                text('🚛', this.x, height - 50);
-            }
-            move() {
-                this.x = mouseX;
-            }
-        }
-
-        class Item {
-            constructor(x, y, emoji, speed) {
-                this.x = x;
-                this.y = y;
-                this.emoji = emoji;
-                this.speed = speed;
-            }
-            fall() {
-                this.y += this.speed;
-                if (this.y > height) {
-                    this.reset();
-                }
-            }
-            show() {
-                textSize(32);
-                text(this.emoji, this.x, this.y);
-            }
-            reset() {
-                this.x = random(width);
-                this.y = 0;
-            }
-        }
     </script>
 </body>
 </html>
