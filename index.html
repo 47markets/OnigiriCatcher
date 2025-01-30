@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>おにぎりラッシュ！</title>
+    <title>Onigiri Catcher</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <style>
         body {
@@ -61,7 +61,7 @@
 </head>
 <body>
     <div id="startScreen">
-        <h1>おにぎりラッシュ！</h1>
+        <h1>Onigiri Catcher</h1>
         <p>おにぎりをキャッチして、お茶を避けろ！</p>
         <button id="startButton">ゲームスタート</button>
     </div>
@@ -107,7 +107,7 @@
         }
 
         function draw() {
-            background(220);
+            background('#FFA500');
             if (gameStarted && !gameOver) {
                 player.show();
                 player.move();
