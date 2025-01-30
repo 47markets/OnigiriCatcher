@@ -10,7 +10,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            height: 80vh;
             overflow: hidden;
             overflow: hidden; /* 縦スクロールを無効化 */
             padding-bottom: 20px; /* 下に少し余白を追加 */
@@ -90,7 +90,7 @@
         }
 
         function setup() {
-            createCanvas(320, 499);
+            createCanvas(320, 400);
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
             tea = new Item(random(width), 0, '🍵', 7);
