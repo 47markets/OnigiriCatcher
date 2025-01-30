@@ -114,7 +114,7 @@
                 text(`スコア: ${score}`, 20, 30);
 
                 // 難易度調整: スコア1ごとに落下速度を徐々に増やす
-                fallSpeed = 5 + score * 0.05;
+                fallSpeed = 5 + score * 0.1;
                 onigiri.speed = fallSpeed;
                 tea.forEach(t => t.speed = fallSpeed);
 
