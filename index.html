@@ -8,18 +8,20 @@
     <style>
         body {
             text-align: center;
-            font-family: Arial, sans-serif;
-            background-color: #f8f8f8;
-            touch-action: none; /* スマホのスクロールを無効化 */
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            touch-action: none;
         }
         canvas {
             display: block;
             margin: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
         .hidden {
             display: none;
         }
-        #gameOverScreen {
+        .screen {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -28,52 +30,36 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            text-align: center;
         }
-        .gameOverButton {
-            font-size: 28px;
-            padding: 20px 40px;
-            margin: 20px 0;
-            width: 300px;
-        }
-        #startScreen {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        }
-        #startButton {
-            font-size: 24px;
-            padding: 10px 20px;
-            margin-top: 10px;
+        .button {
+            font-size: 20px;
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            transition: 0.3s;
+        }
+        .button:hover {
+            background-color: #ddd;
         }
     </style>
 </head>
 <body>
-    <div id="startScreen">
+    <div id="startScreen" class="screen">
         <h1>Onigiri Catcher</h1>
         <p>おにぎりをキャッチして、お茶を避けろ！</p>
-        <button id="startButton" onclick="startGame()">ゲームスタート</button>
+        <button class="button" onclick="startGame()">ゲームスタート</button>
     </div>
     <audio id="bgm" loop>
         <source src="bgm.mp3" type="audio/mpeg">
     </audio>
-    <div id="gameOverScreen" class="hidden">
+    <div id="gameOverScreen" class="screen hidden">
         <h2>ゲームオーバー！</h2>
-        <button class="gameOverButton" onclick="restartGame()">もう一度遊ぶ</button>
-        <a href="https://www.instagram.com/47markets/" target="_blank" rel="noopener noreferrer">
-            <button class="gameOverButton" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">Instagram</button>
-        </a>
-        <a href="https://shop.47markets.org/" target="_blank" rel="noopener noreferrer">
-            <button class="gameOverButton" onclick="window.open('https://shop.47markets.org/', '_blank')">通販サイト</button>
-        </a>
+        <button class="button" onclick="restartGame()">もう一度遊ぶ</button>
+        <button class="button" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">４７市</button>
+        <button class="button" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
     </div>
     <script>
         let onigiri, tea, player;
@@ -95,15 +81,15 @@
         }
 
         function startGame() {
-    document.getElementById("startScreen").classList.add("hidden");
-    gameStarted = true;
-    gameOver = false; // ゲームオーバーフラグをリセット
-    score = 0; // スコアをリセット
-    onigiri.reset(); // おにぎりの位置をリセット
-    tea.reset(); // お茶の位置をリセット
-    bgm.play();
-    loop();
-}
+            document.getElementById("startScreen").classList.add("hidden");
+            gameStarted = true;
+            gameOver = false;
+            score = 0;
+            onigiri.reset();
+            tea.reset();
+            bgm.play();
+            loop();
+        }
 
         function draw() {
             background(220);
@@ -122,19 +108,12 @@
         }
         
         function checkCollision() {
-    if (!gameStarted) return; // ゲームが開始していなければ処理を行わない
+            if (!gameStarted) return;
 
-    if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
-        score++;
-        onigiri.reset();
-    }
-    if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
-        gameOver = true;
-        document.getElementById("gameOverScreen").classList.remove("hidden");
-        bgm.pause();
-        noLoop();
-    }
-}
+            if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
+                score++;
+                onigiri.reset();
+            }
             if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
                 gameOver = true;
                 document.getElementById("gameOverScreen").classList.remove("hidden");
@@ -144,25 +123,45 @@
         }
         
         function restartGame() {
-    document.getElementById("gameOverScreen").classList.add("hidden");
-    gameStarted = true;
-    gameOver = false;
-    score = 0;
-    onigiri.reset();
-    tea.reset();
-    bgm.play();
-    loop();
-}
+            document.getElementById("gameOverScreen").classList.add("hidden");
+            startGame();
+        }
 
-        function mousePressed() {
-            if (gameOver) {
-                restartGame();
+        class Player {
+            constructor() {
+                this.x = width / 2;
+            }
+            show() {
+                textSize(32);
+                text('🚛', this.x, height - 50);
+            }
+            move() {
+                this.x = mouseX;
             }
         }
 
-        document.addEventListener("touchmove", function(event) {
-            event.preventDefault(); // スクロールを完全に無効化
-        }, { passive: false });
+        class Item {
+            constructor(x, y, emoji, speed) {
+                this.x = x;
+                this.y = y;
+                this.emoji = emoji;
+                this.speed = speed;
+            }
+            fall() {
+                this.y += this.speed;
+                if (this.y > height) {
+                    this.reset();
+                }
+            }
+            show() {
+                textSize(32);
+                text(this.emoji, this.x, this.y);
+            }
+            reset() {
+                this.x = random(width);
+                this.y = 0;
+            }
+        }
     </script>
 </body>
 </html>
