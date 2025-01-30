@@ -10,6 +10,7 @@
             text-align: center;
             font-family: Arial, sans-serif;
             background-color: #f8f8f8;
+            touch-action: none; /* スマホのスクロールを無効化 */
         }
         canvas {
             display: block;
@@ -117,6 +118,10 @@
                 restartGame();
             }
         }
+
+        document.addEventListener("touchmove", function(event) {
+            event.preventDefault(); // スクロールを完全に無効化
+        }, { passive: false });
 
         class Player {
             constructor() {
