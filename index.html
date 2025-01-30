@@ -15,28 +15,69 @@
             display: block;
             margin: auto;
         }
+        .hidden {
+            display: none;
+        }
+        #gameOverScreen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
-    <h1>おにぎりラッシュ！</h1>
-    <p>おにぎりをキャッチして、お茶を避けろ！</p>
+    <h1 id="title">おにぎりラッシュ！</h1>
+    <p id="instructions">おにぎりをキャッチして、お茶を避けろ！</p>
+    <p id="countdown"></p>
+    <audio id="bgm" loop>
+        <source src="bgm.mp3" type="audio/mpeg">
+    </audio>
+    <div id="gameOverScreen" class="hidden">
+        <h2>ゲームオーバー！</h2>
+        <button onclick="restartGame()">もう一度遊ぶ</button>
+        <a href="https://www.instagram.com/47markets/" target="_blank"><button>Instagram</button></a>
+        <a href="https://shop.47markets.org/" target="_blank"><button>通販サイト</button></a>
+    </div>
     <script>
-        let onigiri;
-        let tea;
-        let player;
+        let onigiri, tea, player;
         let score = 0;
         let gameOver = false;
+        let countdown = 3;
+        let gameStarted = false;
+        let bgm;
         
+        function preload() {
+            bgm = document.getElementById("bgm");
+        }
+
         function setup() {
             createCanvas(400, 600);
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
             tea = new Item(random(width), 0, '🍵', 7);
+            
+            let countdownInterval = setInterval(() => {
+                document.getElementById("countdown").innerText = countdown;
+                countdown--;
+                if (countdown < 0) {
+                    clearInterval(countdownInterval);
+                    gameStarted = true;
+                    document.getElementById("title").classList.add("hidden");
+                    document.getElementById("instructions").classList.add("hidden");
+                    document.getElementById("countdown").classList.add("hidden");
+                    bgm.play();
+                }
+            }, 1000);
         }
 
         function draw() {
             background(220);
-            if (!gameOver) {
+            if (gameStarted && !gameOver) {
                 player.show();
                 player.move();
                 onigiri.fall();
@@ -47,12 +88,6 @@
                 fill(0);
                 textSize(20);
                 text(`スコア: ${score}`, 20, 30);
-            } else {
-                fill(255, 0, 0);
-                textSize(32);
-                text('ゲームオーバー！', width / 4, height / 2);
-                textSize(20);
-                text('タップして再開', width / 3, height / 2 + 40);
             }
         }
         
@@ -63,15 +98,23 @@
             }
             if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
                 gameOver = true;
+                document.getElementById("gameOverScreen").classList.remove("hidden");
+                bgm.pause();
             }
         }
         
+        function restartGame() {
+            score = 0;
+            gameOver = false;
+            onigiri.reset();
+            tea.reset();
+            document.getElementById("gameOverScreen").classList.add("hidden");
+            bgm.play();
+        }
+
         function mousePressed() {
             if (gameOver) {
-                score = 0;
-                gameOver = false;
-                onigiri.reset();
-                tea.reset();
+                restartGame();
             }
         }
 
@@ -81,7 +124,7 @@
             }
             show() {
                 textSize(32);
-                text('🧑', this.x, height - 50);
+                text('🚛', this.x, height - 50);
             }
             move() {
                 this.x = mouseX;
