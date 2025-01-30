@@ -84,15 +84,24 @@
         }
 
         function setup() {
-            let canvas = createCanvas(windowWidth, windowHeight);
-            canvas.style('display', 'block');
-            player = new Player();
-            onigiri = new Item(random(width), 0, '🍙', 5);
-            tea = new Item(random(width), 0, '🍵', 7);
-            noLoop();
+    let canvas = createCanvas(windowWidth, windowHeight);
+    canvas.style('display', 'block');
+    player = new Player();
+    onigiri = new Item(random(width), 0, '🍙', 5);
+    tea = new Item(random(width), 0, '🍵', 7);
+}
         }
 
         function startGame() {
+    document.getElementById("startScreen").classList.add("hidden");
+    gameStarted = true;
+    gameOver = false;
+    score = 0;
+    onigiri.reset();
+    tea.reset();
+    bgm.play();
+    clear(); // 画面をリセット
+    loop(); // ゲームループを確実に再開
             document.getElementById("startScreen").classList.add("hidden");
             gameStarted = true;
             gameOver = false;
