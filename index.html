@@ -7,6 +7,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <style>
         body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 10vh;
             text-align: center;
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
@@ -131,7 +135,9 @@
         
         function restartGame() {
             document.getElementById("gameOverScreen").classList.add("hidden");
-            setTimeout(startGame, 1500); // 1.5秒の遅延
+            setTimeout(() => {
+                document.getElementById("startScreen").classList.remove("hidden");
+            }, 1500); // 1.5秒の遅延
         }
 
         class Player {
