@@ -55,7 +55,6 @@
     <div id="startScreen" class="screen">
         <h1>Onigiri Catcher</h1>
         <p>おにぎりをキャッチして<br>お茶を避けろ！</p>
-        <p id="highScoreDisplay">High Score: 0</p>
         <button class="button" onclick="startGame()">Game Start</button>
     </div>
     <audio id="bgm" loop>
@@ -63,8 +62,6 @@
     </audio>
     <div id="gameOverScreen" class="screen hidden">
         <h2>Game Over!</h2>
-        <p>Your Score: <span id="finalScore">0</span></p>
-        <p>High Score: <span id="highScore">0</span></p>
         <button class="button" onclick="restartGame()">Play Again</button>
         <button class="button" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">４７市</button>
         <button class="button" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
@@ -74,34 +71,22 @@
         let score = 0;
         let gameOver = false;
         let gameStarted = false;
-        let highScore = localStorage.getItem("highScore") || 0;
         let bgm;
-
-        document.getElementById("highScoreDisplay").innerText = "High Score: " + highScore;
         
         function preload() {
             bgm = document.getElementById("bgm");
         }
 
         function setup() {
-    let canvas = createCanvas(windowWidth, windowHeight);
-    canvas.style('display', 'block');
-    player = new Player();
-    onigiri = new Item(random(width), 0, '🍙', 5);
-    tea = new Item(random(width), 0, '🍵', 7);
-}
+            let canvas = createCanvas(windowWidth, windowHeight);
+            canvas.style('display', 'block');
+            player = new Player();
+            onigiri = new Item(random(width), 0, '🍙', 5);
+            tea = new Item(random(width), 0, '🍵', 7);
+            noLoop();
         }
 
         function startGame() {
-    document.getElementById("startScreen").classList.add("hidden");
-    gameStarted = true;
-    gameOver = false;
-    score = 0;
-    onigiri.reset();
-    tea.reset();
-    bgm.play();
-    clear(); // 画面をリセット
-    loop(); // ゲームループを確実に再開
             document.getElementById("startScreen").classList.add("hidden");
             gameStarted = true;
             gameOver = false;
@@ -137,12 +122,6 @@
             }
             if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
                 gameOver = true;
-                document.getElementById("finalScore").innerText = score;
-                if (score > highScore) {
-                    highScore = score;
-                    localStorage.setItem("highScore", highScore);
-                }
-                document.getElementById("highScore").innerText = highScore;
                 document.getElementById("gameOverScreen").classList.remove("hidden");
                 bgm.pause();
                 noLoop();
@@ -152,8 +131,45 @@
         function restartGame() {
             document.getElementById("gameOverScreen").classList.add("hidden");
             document.getElementById("startScreen").classList.remove("hidden");
-            document.getElementById("highScoreDisplay").innerText = "High Score: " + highScore;
+        }
+
+        class Player {
+            constructor() {
+                this.x = width / 2;
+            }
+            show() {
+                textSize(32);
+                text('🚛', this.x, height - 50);
+            }
+            move() {
+                this.x = mouseX;
+            }
+        }
+
+        class Item {
+            constructor(x, y, emoji, speed) {
+                this.x = x;
+                this.y = y;
+                this.emoji = emoji;
+                this.speed = speed;
+            }
+            fall() {
+                this.y += this.speed;
+                if (this.y > height) {
+                    this.reset();
+                }
+            }
+            show() {
+                textSize(32);
+                text(this.emoji, this.x, this.y);
+            }
+            reset() {
+                this.x = random(width);
+                this.y = 0;
+            }
         }
     </script>
 </body>
 </html>
+
+
