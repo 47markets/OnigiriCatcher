@@ -60,15 +60,15 @@
 <body>
     <div id="startScreen" class="screen">
         <h1>Onigiri Catcher</h1>
-        <p>おにぎりをキャッチして、お茶を避けろ！</p>
-        <button class="button" onclick="startGame()">ゲームスタート</button>
+        <p>おにぎりをキャッチして<br>お茶を避けろ！</p>
+        <button class="button" onclick="startGame()">Start Game</button>
     </div>
     <audio id="bgm" loop>
         <source src="bgm.mp3" type="audio/mpeg">
     </audio>
     <div id="gameOverScreen" class="screen hidden">
-        <h2>ゲームオーバー！</h2>
-        <button class="button" onclick="restartGame()">もう一度遊ぶ</button>
+        <h2>Game Over!</h2>
+        <button class="button" onclick="restartGame()">Play Again</button>
         <button class="button" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">４７市</button>
         <button class="button" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
     </div>
@@ -135,9 +135,7 @@
         
         function restartGame() {
             document.getElementById("gameOverScreen").classList.add("hidden");
-            setTimeout(() => {
-                document.getElementById("startScreen").classList.remove("hidden");
-            }, 1500); // 1.5秒の遅延
+            document.getElementById("startScreen").classList.remove("hidden"); // 1.5秒の遅延
         }
 
         class Player {
