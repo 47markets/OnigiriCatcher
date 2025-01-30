@@ -10,13 +10,30 @@
             text-align: center;
             font-family: Arial, sans-serif;
             background-color: #f8f8f8;
+            overflow: hidden; /* 縦スクロール防止 */
         }
         canvas {
             display: block;
             margin: auto;
+            height: 720px; /* 縦の大きさを1.8倍に拡大 */
         }
         .hidden {
             display: none;
+        }
+        #countdownScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 100px;
+            z-index: 1000;
         }
         #gameOverScreen {
             position: absolute;
@@ -24,24 +41,36 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
-            padding: 20px;
+            padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        .gameOverButton {
+            font-size: 24px;
+            padding: 15px 30px;
+            margin: 20px 0;
+            width: 250px;
         }
     </style>
 </head>
 <body>
-    <h1 id="title">おにぎりラッシュ！</h1>
-    <p id="instructions">おにぎりをキャッチして、お茶を避けろ！</p>
-    <p id="countdown"></p>
+    <div id="countdownScreen">
+        <h1 id="title">おにぎりラッシュ！</h1>
+        <p id="instructions">おにぎりをキャッチして、お茶を避けろ！</p>
+        <p id="countdown"></p>
+    </div>
     <audio id="bgm" loop>
         <source src="bgm.mp3" type="audio/mpeg">
     </audio>
     <div id="gameOverScreen" class="hidden">
         <h2>ゲームオーバー！</h2>
-        <button onclick="restartGame()">もう一度遊ぶ</button>
-        <a href="https://www.instagram.com/47markets/" target="_blank"><button>Instagram</button></a>
-        <a href="https://shop.47markets.org/" target="_blank"><button>通販サイト</button></a>
+        <button class="gameOverButton" onclick="restartGame()">もう一度遊ぶ</button>
+        <a href="https://www.instagram.com/47markets/" target="_blank">
+            <button class="gameOverButton">Instagram</button>
+        </a>
+        <a href="https://shop.47markets.org/" target="_blank">
+            <button class="gameOverButton">通販サイト</button>
+        </a>
     </div>
     <script>
         let onigiri, tea, player;
@@ -56,7 +85,7 @@
         }
 
         function setup() {
-            createCanvas(400, 600);
+            createCanvas(400, 720);
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
             tea = new Item(random(width), 0, '🍵', 7);
@@ -67,9 +96,7 @@
                 if (countdown < 0) {
                     clearInterval(countdownInterval);
                     gameStarted = true;
-                    document.getElementById("title").classList.add("hidden");
-                    document.getElementById("instructions").classList.add("hidden");
-                    document.getElementById("countdown").classList.add("hidden");
+                    document.getElementById("countdownScreen").classList.add("hidden");
                     bgm.play();
                 }
             }, 1000);
