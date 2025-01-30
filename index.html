@@ -72,6 +72,8 @@
         let gameOver = false;
         let gameStarted = false;
         let bgm;
+        let baseSpeed = 5.0;
+        let maxSpeed = 10.0;
         
         function preload() {
             bgm = document.getElementById("bgm");
@@ -81,8 +83,8 @@
             let canvas = createCanvas(windowWidth, windowHeight);
             canvas.style('display', 'block');
             player = new Player();
-            onigiri = new Item(random(width), 0, '🍙', 5);
-            tea = new Item(random(width), 0, '🍵', 7);
+            onigiri = new Item(random(width), 0, '🍙', baseSpeed);
+            tea = new Item(random(width), 0, '🍵', baseSpeed);
             noLoop();
         }
 
@@ -91,10 +93,17 @@
             gameStarted = true;
             gameOver = false;
             score = 0;
+            updateSpeed();
             onigiri.reset();
             tea.reset();
             bgm.play();
             loop();
+        }
+
+        function updateSpeed() {
+            let newSpeed = baseSpeed + Math.min((score / 5) * 0.5, maxSpeed - baseSpeed);
+            onigiri.speed = newSpeed;
+            tea.speed = newSpeed;
         }
 
         function draw() {
@@ -107,6 +116,7 @@
                 tea.fall();
                 tea.show();
                 checkCollision();
+                updateSpeed();
                 fill(0);
                 textSize(20);
                 text(`スコア: ${score}`, 20, 30);
@@ -119,6 +129,7 @@
             if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
                 score++;
                 onigiri.reset();
+                updateSpeed();
             }
             if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
                 gameOver = true;
@@ -171,5 +182,3 @@
     </script>
 </body>
 </html>
-
-
