@@ -1,167 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kitchen Car Rush</title>
+    <title>おにぎりラッシュ！</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
             text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
         }
         canvas {
             display: block;
-            margin: 0 auto;
-            background-color: #87ceeb;
-            border: 2px solid #333;
-        }
-        .game-over {
-            display: none;
-            margin-top: 20px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 18px;
-            margin: 10px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: white;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .shop-button {
-            background-color: #008CBA;
-        }
-        .shop-button:hover {
-            background-color: #007bb5;
+            margin: auto;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
-    <div class="game-over">
-        <h1>Game Over!</h1>
-        <button id="playAgain">Play Again</button>
-        <button id="visitShop" class="shop-button">Visit Shop</button>
-    </div>
-
+    <h1>おにぎりラッシュ！</h1>
+    <p>おにぎりをキャッチして、お茶を避けろ！</p>
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-
-        canvas.width = window.innerWidth < 400 ? window.innerWidth : 400;
-        canvas.height = window.innerHeight < 600 ? window.innerHeight : 600;
-
-        const player = {
-            x: canvas.width / 2 - 25,
-            y: canvas.height - 50,
-            width: 50,
-            height: 50,
-            color: 'green',
-            speed: 5
-        };
-
-        const fallingObject = {
-            x: Math.random() * (canvas.width - 30),
-            y: 0,
-            width: 30,
-            height: 30,
-            color: 'red',
-            speed: 3
-        };
-
+        let onigiri;
+        let tea;
+        let player;
         let score = 0;
         let gameOver = false;
-
-        function drawRect(rect) {
-            ctx.fillStyle = rect.color;
-            ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+        
+        function setup() {
+            createCanvas(400, 600);
+            player = new Player();
+            onigiri = new Item(random(width), 0, '🍙', 5);
+            tea = new Item(random(width), 0, '🍵', 7);
         }
 
-        function update() {
-            if (gameOver) return;
-
-            fallingObject.y += fallingObject.speed;
-
-            if (fallingObject.y > canvas.height) {
-                fallingObject.y = 0;
-                fallingObject.x = Math.random() * (canvas.width - fallingObject.width);
-                gameOver = true;
-                endGame();
-            }
-
-            if (
-                player.x < fallingObject.x + fallingObject.width &&
-                player.x + player.width > fallingObject.x &&
-                player.y < fallingObject.y + fallingObject.height &&
-                player.y + player.height > fallingObject.y
-            ) {
-                score++;
-                fallingObject.y = 0;
-                fallingObject.x = Math.random() * (canvas.width - fallingObject.width);
-            }
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawRect(player);
-            drawRect(fallingObject);
-
-            ctx.fillStyle = 'black';
-            ctx.font = `${Math.min(canvas.width, canvas.height) * 0.05}px Arial`;
-            ctx.fillText(`Score: ${score}`, 10, 30);
-        }
-
-        function movePlayer(event) {
-            if (event.key === 'ArrowLeft' && player.x > 0) {
-                player.x -= player.speed;
-            } else if (event.key === 'ArrowRight' && player.x + player.width < canvas.width) {
-                player.x += player.speed;
-            }
-        }
-
-        document.addEventListener('keydown', movePlayer);
-
-        document.addEventListener('touchstart', (event) => {
-            const touchX = event.touches[0].clientX;
-
-            if (touchX < canvas.width / 2 && player.x > 0) {
-                player.x -= player.speed;
-            } else if (touchX >= canvas.width / 2 && player.x + player.width < canvas.width) {
-                player.x += player.speed;
-            }
-        });
-
-        function gameLoop() {
-            update();
+        function draw() {
+            background(220);
             if (!gameOver) {
-                requestAnimationFrame(gameLoop);
+                player.show();
+                player.move();
+                onigiri.fall();
+                onigiri.show();
+                tea.fall();
+                tea.show();
+                checkCollision();
+                fill(0);
+                textSize(20);
+                text(`スコア: ${score}`, 20, 30);
+            } else {
+                fill(255, 0, 0);
+                textSize(32);
+                text('ゲームオーバー！', width / 4, height / 2);
+                textSize(20);
+                text('タップして再開', width / 3, height / 2 + 40);
+            }
+        }
+        
+        function checkCollision() {
+            if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
+                score++;
+                onigiri.reset();
+            }
+            if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
+                gameOver = true;
+            }
+        }
+        
+        function mousePressed() {
+            if (gameOver) {
+                score = 0;
+                gameOver = false;
+                onigiri.reset();
+                tea.reset();
             }
         }
 
-        function endGame() {
-            document.querySelector('.game-over').style.display = 'block';
+        class Player {
+            constructor() {
+                this.x = width / 2;
+            }
+            show() {
+                textSize(32);
+                text('🧑', this.x, height - 50);
+            }
+            move() {
+                this.x = mouseX;
+            }
         }
 
-        document.getElementById('playAgain').addEventListener('click', () => {
-            score = 0;
-            gameOver = false;
-            fallingObject.y = 0;
-            fallingObject.x = Math.random() * (canvas.width - fallingObject.width);
-            document.querySelector('.game-over').style.display = 'none';
-            gameLoop();
-        });
-
-        document.getElementById('visitShop').addEventListener('click', () => {
-            window.location.href = 'https://shop.47markets.org/';
-        });
-
-        gameLoop();
+        class Item {
+            constructor(x, y, emoji, speed) {
+                this.x = x;
+                this.y = y;
+                this.emoji = emoji;
+                this.speed = speed;
+            }
+            fall() {
+                this.y += this.speed;
+                if (this.y > height) {
+                    this.reset();
+                }
+            }
+            show() {
+                textSize(32);
+                text(this.emoji, this.x, this.y);
+            }
+            reset() {
+                this.x = random(width);
+                this.y = 0;
+            }
+        }
     </script>
 </body>
 </html>
