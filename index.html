@@ -67,14 +67,14 @@
         <button class="button" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
     </div>
     <script>
-        let onigiri, tea = [];
-        let player;
+        let onigiri, tea, player;
         let score = 0;
         let gameOver = false;
         let gameStarted = false;
         let bgm;
-        let fallSpeed = 5;
-
+        let baseSpeed = 5.0;
+        let maxSpeed = 10.0;
+        
         function preload() {
             bgm = document.getElementById("bgm");
         }
@@ -83,8 +83,8 @@
             let canvas = createCanvas(windowWidth, windowHeight);
             canvas.style('display', 'block');
             player = new Player();
-            onigiri = new Item(random(width), 0, '🍙', fallSpeed);
-            tea.push(new Item(random(width), 0, '🍵', fallSpeed));
+            onigiri = new Item(random(width), 0, '🍙', baseSpeed);
+            tea = new Item(random(width), 0, '🍵', baseSpeed);
             noLoop();
         }
 
@@ -93,11 +93,17 @@
             gameStarted = true;
             gameOver = false;
             score = 0;
-            fallSpeed = 5;
+            updateSpeed();
             onigiri.reset();
-            tea = [new Item(random(width), 0, '🍵', fallSpeed)];
+            tea.reset();
             bgm.play();
             loop();
+        }
+
+        function updateSpeed() {
+            let newSpeed = baseSpeed + Math.min((score / 5) * 0.5, maxSpeed - baseSpeed);
+            onigiri.speed = newSpeed;
+            tea.speed = newSpeed;
         }
 
         function draw() {
@@ -107,21 +113,13 @@
                 player.move();
                 onigiri.fall();
                 onigiri.show();
-                tea.forEach(t => { t.fall(); t.show(); });
+                tea.fall();
+                tea.show();
                 checkCollision();
+                updateSpeed();
                 fill(0);
                 textSize(20);
                 text(`スコア: ${score}`, 20, 30);
-
-                // 難易度調整: スコア1ごとに落下速度を徐々に増やす
-                fallSpeed = 5 + score * 0.1;
-                onigiri.speed = fallSpeed;
-                tea.forEach(t => t.speed = fallSpeed);
-
-                // 20スコアごとにお茶を増やす（最大3個）
-                if ((score === 10 || score === 20 || score === 40 || score === 60) && tea.length < 5 && !tea.some(t => t.y === 0)) {
-                    tea.push(new Item(random(width), 0, '🍵', fallSpeed));
-                }
             }
         }
         
@@ -131,15 +129,14 @@
             if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
                 score++;
                 onigiri.reset();
+                updateSpeed();
             }
-            tea.forEach(t => {
-                if (dist(player.x, height - 50, t.x, t.y) < 30) {
-                    gameOver = true;
-                    document.getElementById("gameOverScreen").classList.remove("hidden");
-                    bgm.pause();
-                    noLoop();
-                }
-            });
+            if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
+                gameOver = true;
+                document.getElementById("gameOverScreen").classList.remove("hidden");
+                bgm.pause();
+                noLoop();
+            }
         }
         
         function restartGame() {
