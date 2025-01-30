@@ -61,7 +61,19 @@
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
             tea = new Item(random(width), 0, '🍵', 7);
-            bgm.play();
+            
+            let countdownInterval = setInterval(() => {
+                document.getElementById("countdown").innerText = countdown;
+                countdown--;
+                if (countdown < 0) {
+                    clearInterval(countdownInterval);
+                    gameStarted = true;
+                    document.getElementById("title").classList.add("hidden");
+                    document.getElementById("instructions").classList.add("hidden");
+                    document.getElementById("countdown").classList.add("hidden");
+                    bgm.play();
+                }
+            }, 1000);
         }
 
         function draw() {
