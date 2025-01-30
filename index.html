@@ -11,10 +11,13 @@
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
             touch-action: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         canvas {
             display: block;
-            margin: auto;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
@@ -31,6 +34,8 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             text-align: center;
+            width: 80%;
+            max-width: 400px;
         }
         .button {
             font-size: 20px;
@@ -40,6 +45,8 @@
             border-radius: 5px;
             cursor: pointer;
             transition: 0.3s;
+            width: 80%;
+            max-width: 300px;
         }
         .button:hover {
             background-color: #ddd;
@@ -73,7 +80,7 @@
         }
 
         function setup() {
-            createCanvas(267, 384);
+            createCanvas(320, 499);
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
             tea = new Item(random(width), 0, '🍵', 7);
@@ -124,7 +131,7 @@
         
         function restartGame() {
             document.getElementById("gameOverScreen").classList.add("hidden");
-            startGame();
+            setTimeout(startGame, 1500); // 1.5秒の遅延
         }
 
         class Player {
