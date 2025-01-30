@@ -119,7 +119,7 @@
                 tea.forEach(t => t.speed = fallSpeed);
 
                 // 20スコアごとにお茶を増やす（最大3個）
-                if (score % 20 === 0 && score > 0 && tea.length < 3) {
+                if ((score === 10 || score % 20 === 0) && score > 0 && tea.length < 3) {
                     tea.push(new Item(random(width), 0, '🍵', fallSpeed));
                 }
             }
