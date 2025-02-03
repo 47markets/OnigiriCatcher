@@ -14,6 +14,7 @@
             height: 100vh;
             overflow: hidden;
             margin: 0;
+            touch-action: none;
         }
         canvas {
             display: block;
@@ -80,8 +81,8 @@
             canvas.parent(document.body);
             bgm = document.getElementById("bgm");
             player = new Player();
-            onigiri = new Item(random(width), 0, '🍙', 5);
-            tea = new Item(random(width), 0, '🍵', 7);
+            onigiri = new Item(random(width), 0, '\uD83C\uDF59', 5);
+            tea = new Item(random(width), 0, '\uD83C\uDF75', 7);
             noLoop();
         }
         
@@ -135,40 +136,6 @@
         function restartGame() {
             document.getElementById("gameOverScreen").classList.add("hidden");
             startGame();
-        }
-        
-        class Player {
-            constructor() {
-                this.x = width / 2;
-            }
-            move() {
-                this.x = constrain(mouseX, 0, width);
-            }
-            show() {
-                fill(0);
-                ellipse(this.x, height - 50, 40, 40);
-            }
-        }
-        
-        class Item {
-            constructor(x, y, symbol, speed) {
-                this.x = x;
-                this.y = y;
-                this.symbol = symbol;
-                this.speed = speed;
-            }
-            fall() {
-                this.y += this.speed;
-                if (this.y > height) this.reset();
-            }
-            reset() {
-                this.x = random(width);
-                this.y = 0;
-            }
-            show() {
-                textSize(30);
-                text(this.symbol, this.x, this.y);
-            }
         }
     </script>
 </body>
