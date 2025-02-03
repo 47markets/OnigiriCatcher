@@ -2,193 +2,193 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Onigiri Catcher2</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onigiri Catcher</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
     <style>
         body {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            overflow: hidden;
+            background-color: #f8f9fa;
             margin: 0;
         }
-        canvas {
-            display: block;
-            max-width: 100vw;
-            max-height: 100vh;
+        #game-container {
+            position: relative;
+            text-align: center;
         }
-        .hidden {
-            display: none;
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #E67E22;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 5px;
         }
-        .screen {
+        .button:hover {
+            background-color: #D35400;
+        }
+        #banner {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
+            width: 66%;
+            display: none;
         }
-        .button {
-            font-size: 20px;
-            padding: 15px 30px;
-            margin: 10px;
+        #close-banner {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: red;
+            color: white;
             border: none;
-            border-radius: 5px;
+            font-size: 20px;
             cursor: pointer;
-            transition: 0.3s;
-            width: 80%;
-            max-width: 300px;
-        }
-        .button:hover {
-            background-color: #ddd;
         }
     </style>
 </head>
 <body>
-    <div id="startScreen" class="screen">
-        <h1>Onigiri Catcher</h1>
-        <p>おにぎりをキャッチして<br>お茶を避けろ！</p>
-        <button class="button" onclick="startGame()">Game Start</button>
-    </div>
-    <audio id="bgm" loop>
-        <source src="bgm.mp3" type="audio/mpeg">
-    </audio>
-    <div id="gameOverScreen" class="screen hidden">
-        <h2>Game Over!</h2>
-        <button class="button" onclick="restartGame()">Play Again</button>
-        <button class="button" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">４７市</button>
-        <button class="button" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
+    <div id="game-container">
+        <button id="start-button" class="button">Game Start</button>
+        <div id="game-over-screen" style="display:none;">
+            <h1>Game Over!</h1>
+            <p>スコア: <span id="final-score"></span></p>
+            <p>ハイスコア: <span id="high-score"></span></p>
+            <img id="banner" src="" alt="広告バナー">
+            <button id="close-banner">×</button>
+            <br>
+            <button id="play-again" class="button">Play Again</button>
+            <a href="https://www.instagram.com/47markets/" class="button">４７市</a>
+            <a href="https://shop.47markets.org/" class="button">４７市ギフト</a>
+        </div>
     </div>
     <script>
-        let onigiri, player;
+        let truck;
+        let onigiris = [];
         let teas = [];
-        let maxTeas = 8;
         let score = 0;
-        let gameOver = false;
-        let gameStarted = false;
-        let bgm;
+        let highScore = 0;
+        let gameRunning = false;
+        let speed = 2;
         
-        function preload() {
-            bgm = document.getElementById("bgm");
-        }
-
         function setup() {
-    let canvas = createCanvas(windowWidth, windowHeight);
-    canvas.style('display', 'block');
-    player = new Player();
-    onigiri = new Item(random(width), 0, '🍙', 5);
-    teas = [new Item(random(width), 0, '🍵', 7)];
-    noLoop();
+            let canvas = createCanvas(windowWidth, windowHeight * 0.8);
+            canvas.parent('game-container');
+            truck = new Truck();
         }
-
-        function startGame() {
-    document.getElementById("startScreen").classList.add("hidden");
-    gameStarted = true;
-    gameOver = false;
-    score = 0;
-    
-    // アイテムを適切にリセット
-    onigiri.reset();
-    teas = [new Item(random(width), 0, '🍵', 7)];
-    
-    bgm.play();
-    loop();
-    loop();
-            bgm.play();
-            loop();
-        }
-
+        
         function draw() {
-            background(220);
-            if (gameStarted && !gameOver) {
-                player.show();
-                player.move();
-                onigiri.fall();
-                onigiri.show();
-                teas.forEach(tea => {
-                tea.fall();
-                tea.show();
-            });
-                checkCollision();
+            if (gameRunning) {
+                background(220);
+                truck.move();
+                truck.display();
+                
+                if (frameCount % 60 === 0) {
+                    onigiris.push(new Onigiri());
+                    if (score % 5 === 0 && teas.length < 8) {
+                        teas.push(new Tea());
+                    }
+                }
+                
+                onigiris.forEach((o, index) => {
+                    o.fall();
+                    o.display();
+                    if (truck.catch(o)) {
+                        onigiris.splice(index, 1);
+                        score++;
+                        speed += 0.2;
+                    }
+                });
+                
+                teas.forEach((t, index) => {
+                    t.fall();
+                    t.display();
+                    if (truck.hit(t)) {
+                        gameOver();
+                    }
+                });
+                
                 fill(0);
-                textSize(20);
-                text(`スコア: ${score}`, 20, 30);
+                textSize(24);
+                text('Score: ' + score, 20, 40);
             }
         }
         
-        function checkCollision() {
-            if (!gameStarted) return;
-
-            if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
-                score++;
-                onigiri.reset();
-                if (score % 5 === 0 && teas.length < maxTeas) {
-                    teas.push(new Item(random(width), 0, '🍵', 7));
-                }
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById("game-over-screen").style.display = "block";
+            document.getElementById("final-score").textContent = score;
+            if (score > highScore) {
+                highScore = score;
             }
-            teas.forEach(tea => {
-                if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
-                    gameOver = true;
-                    gameOver = true;
-            document.getElementById("gameOverScreen").classList.remove("hidden");
-            bgm.pause();
-            noLoop();
-                }
-            });
-                document.getElementById("gameOverScreen").classList.remove("hidden");
-                bgm.pause();
-                noLoop();
-            }
+            document.getElementById("high-score").textContent = highScore;
+            document.getElementById("banner").src = Math.random() < 0.5 ? "pr_image1.png" : "pr_image2.png";
+            document.getElementById("banner").style.display = "block";
         }
         
-        function restartGame() {
-    document.getElementById("gameOverScreen").classList.add("hidden");
-    startGame();
-    startGame();
-}
-
-        class Player {
+        class Truck {
             constructor() {
                 this.x = width / 2;
-            }
-            show() {
-                textSize(32);
-                text('🚛', this.x, height - 50);
+                this.size = 80;
             }
             move() {
-                this.x = mouseX;
+                this.x = constrain(mouseX, 0, width - this.size);
+            }
+            display() {
+                fill(255, 0, 0);
+                rect(this.x, height - 50, this.size, 30);
+            }
+            catch(onigiri) {
+                return collideRectCircle(this.x, height - 50, this.size, 30, onigiri.x, onigiri.y, onigiri.size);
+            }
+            hit(tea) {
+                return collideRectCircle(this.x, height - 50, this.size, 30, tea.x, tea.y, tea.size);
             }
         }
-
-        class Item {
-            constructor(x, y, emoji, speed) {
-                this.x = x;
-                this.y = y;
-                this.emoji = emoji;
-                this.speed = speed;
-            }
-            fall() {
-                this.y += this.speed;
-                if (this.y > height) {
-                    this.reset();
-                }
-            }
-            show() {
-                textSize(32);
-                text(this.emoji, this.x, this.y);
-            }
-            reset() {
+        
+        class Onigiri {
+            constructor() {
                 this.x = random(width);
                 this.y = 0;
+                this.size = 30;
+            }
+            fall() {
+                this.y += speed;
+            }
+            display() {
+                fill(0, 255, 0);
+                ellipse(this.x, this.y, this.size);
             }
         }
+        
+        class Tea {
+            constructor() {
+                this.x = random(width);
+                this.y = 0;
+                this.size = 30;
+            }
+            fall() {
+                this.y += speed;
+            }
+            display() {
+                fill(0, 0, 255);
+                ellipse(this.x, this.y, this.size);
+            }
+        }
+        
+        document.getElementById("start-button").addEventListener("click", function() {
+            gameRunning = true;
+            score = 0;
+            speed = 2;
+            onigiris = [];
+            teas = [];
+            this.style.display = "none";
+        });
     </script>
 </body>
 </html>
