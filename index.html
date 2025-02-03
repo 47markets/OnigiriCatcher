@@ -65,13 +65,7 @@
         <h2>Game Over!</h2>
         <p>Score: <span id="finalScore">0</span></p>
         <p>High Score: <span id="highScore">0</span></p>
-        <img id="banner" src="" alt="Advertisement" style="display: none; width: 66%;">
-        <button id="closeBanner" onclick="closeBanner()">✖</button>
-        <div id="gameOverButtons" class="hidden">
-            <button class="button" onclick="restartGame()">Play Again</button>
-            <button class="button" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">４７市</button>
-            <button class="button" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
-        </div>
+        <button class="button" onclick="restartGame()">Play Again</button>
     </div>
     <script>
         let player, onigiri, tea;
@@ -81,29 +75,17 @@
         let gameOver = false;
         let bgm;
         
-        function preload() {
-            bgm = document.getElementById("bgm");
-        }
-
         function setup() {
             let canvas = createCanvas(window.innerWidth * 0.9, window.innerHeight * 0.9);
-            canvas.style('display', 'block');
+            canvas.parent(document.body);
+            bgm = document.getElementById("bgm");
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
             tea = new Item(random(width), 0, '🍵', 7);
             noLoop();
         }
-
+        
         function startGame() {
-    document.getElementById("startScreen").classList.add("hidden");
-    gameStarted = true;
-    gameOver = false;
-    score = 0;
-    onigiri.reset();
-    tea.reset();
-    bgm.volume = 0.5;
-    setTimeout(() => bgm.play(), 100);
-    setTimeout(() => loop(), 50);
             document.getElementById("startScreen").classList.add("hidden");
             gameStarted = true;
             gameOver = false;
@@ -114,9 +96,8 @@
             bgm.play();
             loop();
         }
-
+        
         function draw() {
-    console.log("gameStarted:", gameStarted, "gameOver:", gameOver);
             background(220);
             if (gameStarted && !gameOver) {
                 player.show();
@@ -131,7 +112,7 @@
                 text(`Score: ${score}`, 20, 30);
             }
         }
-
+        
         function checkCollision() {
             if (!gameStarted) return;
             if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
@@ -147,18 +128,47 @@
                     localStorage.setItem("highScore", highScore);
                 }
                 document.getElementById("highScore").textContent = highScore;
-                let banner = document.getElementById("banner");
-                banner.src = Math.random() < 0.5 ? "pr_image1.png" : "pr_image2.png";
-                banner.style.display = "block";
-                setTimeout(() => document.getElementById("gameOverButtons").classList.remove("hidden"), 500);
                 noLoop();
             }
         }
-
+        
         function restartGame() {
             document.getElementById("gameOverScreen").classList.add("hidden");
-            document.getElementById("gameOverButtons").classList.add("hidden");
             startGame();
+        }
+        
+        class Player {
+            constructor() {
+                this.x = width / 2;
+            }
+            move() {
+                this.x = constrain(mouseX, 0, width);
+            }
+            show() {
+                fill(0);
+                ellipse(this.x, height - 50, 40, 40);
+            }
+        }
+        
+        class Item {
+            constructor(x, y, symbol, speed) {
+                this.x = x;
+                this.y = y;
+                this.symbol = symbol;
+                this.speed = speed;
+            }
+            fall() {
+                this.y += this.speed;
+                if (this.y > height) this.reset();
+            }
+            reset() {
+                this.x = random(width);
+                this.y = 0;
+            }
+            show() {
+                textSize(30);
+                text(this.symbol, this.x, this.y);
+            }
         }
     </script>
 </body>
