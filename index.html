@@ -79,6 +79,7 @@
     <script>
         let player, onigiri, tea;
 let teaSpeed = 5;
+let teaList = []; // 障害物リスト
         let score = 0;
         let highScore = localStorage.getItem("highScore") || 0;
         let gameStarted = false;
@@ -91,7 +92,7 @@ let teaSpeed = 5;
             bgm = document.getElementById("bgm");
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
-            tea = new Item(random(width), 0, '🍵', teaSpeed);
+            teaList.push(new Item(random(width), 0, '🍵', teaSpeed));
             noLoop();
         }
         
@@ -115,7 +116,9 @@ let teaSpeed = 5;
                 player.show();
                 player.move();
                 onigiri.fall();
+                teaList.forEach(tea => tea.fall());
                 onigiri.show();
+                teaList.forEach(tea => tea.show());
                 tea.fall();
                 tea.show();
                 checkCollision();
@@ -128,11 +131,14 @@ let teaSpeed = 5;
         function checkCollision() {
             if (!gameStarted) return;
             if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
+    if (score % 5 === 0) {
+        teaList.push(new Item(random(width), 0, '🍵', teaSpeed));
+    }
     teaSpeed += 0.1; // スコアごとにお茶のスピードを増加
                 score++;
                 onigiri.reset();
             }
-            if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
+            if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30)) {
                 gameOver = true;
                 document.getElementById("gameOverScreen").classList.remove("hidden");
                 document.getElementById("finalScore").textContent = score;
@@ -147,7 +153,9 @@ let teaSpeed = 5;
         
         function restartGame() {
             document.getElementById("gameOverScreen").classList.add("hidden");
-            startGame();
+            teaSpeed = 5; // リセット
+    teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
+    startGame();
         }
         
         class Player {
