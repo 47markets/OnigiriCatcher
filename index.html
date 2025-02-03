@@ -86,7 +86,7 @@
         }
 
         function setup() {
-            let canvas = createCanvas(windowWidth * 0.9, windowHeight * 0.9);
+            let canvas = createCanvas(window.innerWidth * 0.9, window.innerHeight * 0.9);
             canvas.style('display', 'block');
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
@@ -95,6 +95,15 @@
         }
 
         function startGame() {
+    document.getElementById("startScreen").classList.add("hidden");
+    gameStarted = true;
+    gameOver = false;
+    score = 0;
+    onigiri.reset();
+    tea.reset();
+    bgm.volume = 0.5;
+    setTimeout(() => bgm.play(), 100);
+    setTimeout(() => loop(), 50);
             document.getElementById("startScreen").classList.add("hidden");
             gameStarted = true;
             gameOver = false;
@@ -107,6 +116,7 @@
         }
 
         function draw() {
+    console.log("gameStarted:", gameStarted, "gameOver:", gameOver);
             background(220);
             if (gameStarted && !gameOver) {
                 player.show();
