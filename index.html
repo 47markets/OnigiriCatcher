@@ -92,7 +92,7 @@ let teaList = []; // 障害物リスト
             bgm = document.getElementById("bgm");
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
-            teaList.push(new Item(random(width), 0, '🍵', teaSpeed));
+            
             noLoop();
         }
         
@@ -131,6 +131,7 @@ let teaList = []; // 障害物リスト
         function checkCollision() {
             if (!gameStarted) return;
             if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
+    score++;
     if (score % 5 === 0) {
         teaList.push(new Item(random(width), 0, '🍵', teaSpeed));
     }
