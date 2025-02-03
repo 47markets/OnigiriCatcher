@@ -103,7 +103,7 @@ let teaList = []; // 障害物リスト
             gameOver = false;
             score = 0;
             onigiri.reset();
-            teaList.forEach(tea => tea.reset());
+            teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
             bgm.volume = 0.5;
             bgm.play();
             loop();
