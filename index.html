@@ -82,6 +82,8 @@
 
 class Player {
     constructor() {
+        console.log("Player initialized");
+    constructor() {
         this.x = width / 2;
         this.symbol = '🚛';
     }
@@ -102,16 +104,19 @@ class Player {
         let bgm;
 
         function setup() {
+    console.log("Setup started");
             let canvasHeight = window.innerHeight;
             let canvas = createCanvas(window.innerWidth * 0.9, canvasHeight);
             canvas.parent("gameContainer");
             bgm = document.getElementById("bgm");
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
-            noLoop();
+            console.log("Setup complete, noLoop() called");
+    noLoop();
         }
 
         function startGame() {
+    console.log("Game started");
     console.log("Game started");
             document.getElementById("startScreen").classList.add("hidden");
     document.getElementById("gameOverScreen").classList.add("hidden");
@@ -126,6 +131,7 @@ class Player {
             bgm.volume = 0.5;
             bgm.play();
             console.log("Loop started");
+    console.log("Loop started");
     loop();
         }
 
