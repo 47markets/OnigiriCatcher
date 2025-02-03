@@ -67,3 +67,111 @@
         <button class="button" onclick="startGame()">Game Start</button>
     </div>
     <audio id="bgm" loop>
+        <source src="bgm.mp3" type="audio/mpeg">
+    </audio>
+    <div id="gameOverScreen" class="screen hidden">
+        <h2>Game Over!</h2>
+        <p>Score: <span id="finalScore">0</span></p>
+        <p>High Score: <span id="highScore">0</span></p>
+        <img src="pr_image1.png" alt="Game Over Image" style="width: 80%; max-width: 300px; margin-top: 10px;">
+        <button class="button" onclick="restartGame()">Play Again</button>
+    </div>
+    <div id="gameContainer"></div>
+    <script>
+        let player, onigiri;
+
+class Player {
+    constructor() {
+        this.x = width / 2;
+        this.symbol = '🚛';
+    }
+    move() {
+        this.x = constrain(mouseX, 0, width);
+    }
+    show() {
+        textSize(25);
+        text(this.symbol, this.x, height - 50);
+    }
+}
+        let teaSpeed = 5;
+        let teaList = [];
+        let score = 0;
+        let highScore = localStorage.getItem("highScore") || 0;
+        let gameStarted = false;
+        let gameOver = false;
+        let bgm;
+
+        function setup() {
+            let canvasHeight = window.innerHeight;
+            let canvas = createCanvas(window.innerWidth * 0.9, canvasHeight);
+            canvas.parent("gameContainer");
+            bgm = document.getElementById("bgm");
+            player = new Player();
+            onigiri = new Item(random(width), 0, '🍙', 5);
+            noLoop();
+        }
+
+        function startGame() {
+    console.log("Game started");
+            document.getElementById("startScreen").classList.add("hidden");
+    document.getElementById("gameOverScreen").classList.add("hidden");
+            document.getElementById("gameOverScreen").classList.add("hidden");
+            gameStarted = true;
+            gameOver = false;
+            score = 0;
+            teaSpeed = 5;
+            teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
+            onigiri.reset();
+            player.x = width / 2;
+            bgm.volume = 0.5;
+            bgm.play();
+            console.log("Loop started");
+    loop();
+        }
+
+        function draw() {
+            background(220);
+            if (gameStarted && !gameOver) {
+                player.show();
+                player.move();
+                onigiri.fall();
+                onigiri.show();
+                teaList.forEach(tea => tea.fall());
+                teaList.forEach(tea => tea.show());
+                checkCollision();
+                fill(0);
+                textSize(20);
+                text(`Score: ${score}`, 20, 30);
+            }
+        }
+
+        function checkCollision() {
+            if (!gameStarted) return;
+            if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
+                score++;
+                if (score % 5 === 0) {
+                    teaList.push(new Item(random(width), 0, '🍵', teaSpeed));
+                }
+                teaSpeed += 0.1;
+                teaList.forEach(tea => tea.speed = teaSpeed);
+                onigiri.reset();
+            }
+            if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30)) {
+                gameOver = true;
+                document.getElementById("gameOverScreen").classList.remove("hidden");
+                document.getElementById("finalScore").textContent = score;
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem("highScore", highScore);
+                }
+                document.getElementById("highScore").textContent = highScore;
+                noLoop();
+            }
+        }
+
+        function restartGame() {
+            startGame();
+        }
+    </script>
+</body>
+</html>
