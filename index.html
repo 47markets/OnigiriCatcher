@@ -103,7 +103,7 @@ let teaList = []; // 障害物リスト
             gameOver = false;
             score = 0;
             onigiri.reset();
-            tea.reset();
+            teaList.forEach(tea => tea.reset());
             bgm.volume = 0.5;
             bgm.play();
             loop();
@@ -119,8 +119,8 @@ let teaList = []; // 障害物リスト
                 teaList.forEach(tea => tea.fall());
                 onigiri.show();
                 teaList.forEach(tea => tea.show());
-                tea.fall();
-                tea.show();
+                
+                
                 checkCollision();
                 fill(0);
                 textSize(20);
@@ -154,7 +154,7 @@ let teaList = []; // 障害物リスト
         function restartGame() {
             document.getElementById("gameOverScreen").classList.add("hidden");
             teaSpeed = 5; // リセット
-    teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
+    teaList.forEach(tea => tea.reset());
     startGame();
         }
         
