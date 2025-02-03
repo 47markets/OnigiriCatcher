@@ -65,7 +65,7 @@
         let gameOver = false;
 
         function setup() {
-            let canvas = createCanvas(320, 480);
+            let canvas = createCanvas(windowWidth, windowHeight);
             canvas.style('display', 'block');
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
@@ -74,13 +74,14 @@
         }
 
         function startGame() {
+    setTimeout(() => bgm.play(), 100);
             document.getElementById("startScreen").classList.add("hidden");
             gameStarted = true;
             gameOver = false;
             score = 0;
             onigiri.reset();
             tea.reset();
-            loop();
+            setTimeout(() => loop(), 100);
         }
 
         function draw() {
@@ -107,6 +108,7 @@
             }
             if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
                 gameOver = true;
+    document.getElementById("startScreen").classList.remove("hidden");
                 noLoop();
             }
         }
