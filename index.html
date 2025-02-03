@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Onigiri Catcher</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js">function restartGame() {
+            gameStarted = true;
             document.getElementById("gameOverScreen").classList.add("hidden");
             document.getElementById("gameOverButtons").classList.add("hidden");
             startGame();
@@ -12,6 +13,7 @@
     </script>
     <style>
         body {
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -109,12 +111,18 @@
         }
 
         function setup() {
-            let canvas = createCanvas(windowWidth, windowHeight);
+    let canvas = createCanvas(320, 480);
+    canvas.style('display', 'block');
+    player = new Player();
+    onigiri = new Item(random(width), 0, '🍙', initialSpeed);
+    tea = new Item(random(width), 0, '🍵', initialSpeed + 2);
+    loop(); // 追加
+            let canvas = createCanvas(320, 480);
             canvas.style('display', 'block');
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', initialSpeed);
             tea = new Item(random(width), 0, '🍵', initialSpeed + 2);
-            noLoop();
+            
         }
 
         function startGame() {
@@ -129,6 +137,7 @@
         }
 
         function draw() {
+    console.log('gameStarted:', gameStarted, 'gameOver:', gameOver);
             background(220);
             if (gameStarted && !gameOver) {
                 player.show();
@@ -170,6 +179,12 @@
         }
         
         function closeBanner() {
+    let banner = document.getElementById("banner");
+    banner.style.opacity = "0";
+    setTimeout(() => { 
+        banner.style.display = "none"; 
+        document.getElementById("gameOverButtons").classList.remove("hidden");
+    }, 1000);
             let banner = document.getElementById("banner");
             banner.style.opacity = "0";
             setTimeout(() => { banner.style.display = "none"; }, 500);
