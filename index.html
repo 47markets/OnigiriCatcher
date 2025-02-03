@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Onigiri Catcher</title>
+    <title>Onigiri Catcher2</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <style>
         body {
@@ -80,12 +80,12 @@
         }
 
         function setup() {
-            let canvas = createCanvas(windowWidth, windowHeight);
-            canvas.style('display', 'block');
-            player = new Player();
-            onigiri = new Item(random(width), 0, '🍙', 5);
-            teas.push(new Item(random(width), 0, '🍵', 7));
-            noLoop();
+    let canvas = createCanvas(windowWidth, windowHeight);
+    canvas.style('display', 'block');
+    player = new Player();
+    onigiri = new Item(random(width), 0, '🍙', 5);
+    teas = [new Item(random(width), 0, '🍵', 7)];
+    noLoop();
         }
 
         function startGame() {
@@ -93,9 +93,13 @@
     gameStarted = true;
     gameOver = false;
     score = 0;
+    
+    // アイテムを適切にリセット
     onigiri.reset();
     teas = [new Item(random(width), 0, '🍵', 7)];
+    
     bgm.play();
+    loop();
     loop();
             bgm.play();
             loop();
@@ -146,6 +150,7 @@
         
         function restartGame() {
     document.getElementById("gameOverScreen").classList.add("hidden");
+    startGame();
     startGame();
 }
 
