@@ -87,7 +87,8 @@ let teaList = []; // 障害物リスト
         let bgm;
         
         function setup() {
-            let canvas = createCanvas(window.innerWidth * 0.9, window.innerHeight);
+            let canvasHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+            let canvas = createCanvas(window.innerWidth * 0.9, canvasHeight);
             canvas.parent("gameContainer");
             bgm = document.getElementById("bgm");
             player = new Player();
