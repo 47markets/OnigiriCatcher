@@ -95,6 +95,7 @@
         }
         
         function startGame() {
+            console.log("Game started");
             document.getElementById("startScreen").classList.add("hidden");
             gameStarted = true;
             gameOver = false;
@@ -107,6 +108,7 @@
         }
         
         function draw() {
+            console.log("Drawing frame");
             background(220);
             if (gameStarted && !gameOver) {
                 player.show();
@@ -157,6 +159,27 @@
             show() {
                 textSize(40);
                 text(this.symbol, this.x, height - 50);
+            }
+        }
+        
+        class Item {
+            constructor(x, y, symbol, speed) {
+                this.x = x;
+                this.y = y;
+                this.symbol = symbol;
+                this.speed = speed;
+            }
+            fall() {
+                this.y += this.speed;
+                if (this.y > height) this.reset();
+            }
+            reset() {
+                this.x = random(width);
+                this.y = 0;
+            }
+            show() {
+                textSize(30);
+                text(this.symbol, this.x, this.y);
             }
         }
     </script>
