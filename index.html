@@ -90,6 +90,7 @@ let teaList = []; // 障害物リスト
             let canvasHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
             let canvas = createCanvas(window.innerWidth * 0.9, canvasHeight);
             canvas.parent("gameContainer");
+            canvas.position(canvas.x, canvas.y - 50);
             bgm = document.getElementById("bgm");
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
