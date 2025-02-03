@@ -72,21 +72,21 @@
     <div id="gameOverScreen" class="screen hidden">
         <h2>Game Over!</h2>
         <p>Score: <span id="finalScore">0</span></p>
-        
-    <img src="pr_image1.png" alt="Game Over Image" style="width: 80%; max-width: 300px; margin-top: 10px;">
+        <p>High Score: <span id="highScore">0</span></p>
+        <img src="pr_image1.png" alt="Game Over Image" style="width: 80%; max-width: 300px; margin-top: 10px;">
         <button class="button" onclick="restartGame()">Play Again</button>
     </div>
     <div id="gameContainer"></div>
     <script>
-        let player, onigiri, tea;
-let teaSpeed = 5;
-let teaList = []; // 障害物リスト
+        let player, onigiri;
+        let teaSpeed = 5;
+        let teaList = [];
         let score = 0;
         let highScore = localStorage.getItem("highScore") || 0;
         let gameStarted = false;
         let gameOver = false;
         let bgm;
-        
+
         function setup() {
             let canvasHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
             let canvas = createCanvas(window.innerWidth * 0.9, canvasHeight);
@@ -94,51 +94,49 @@ let teaList = []; // 障害物リスト
             bgm = document.getElementById("bgm");
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
-            
             noLoop();
         }
-        
+
         function startGame() {
-            console.log("Game started");
             document.getElementById("startScreen").classList.add("hidden");
+            document.getElementById("gameOverScreen").classList.add("hidden");
             gameStarted = true;
             gameOver = false;
             score = 0;
-            onigiri.reset();
+            teaSpeed = 5;
             teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
+            onigiri.reset();
+            player.x = width / 2;
             bgm.volume = 0.5;
             bgm.play();
             loop();
         }
-        
+
         function draw() {
-            console.log("Drawing frame");
             background(220);
             if (gameStarted && !gameOver) {
                 player.show();
                 player.move();
                 onigiri.fall();
-                teaList.forEach(tea => tea.fall());
                 onigiri.show();
+                teaList.forEach(tea => tea.fall());
                 teaList.forEach(tea => tea.show());
-                
-                
                 checkCollision();
                 fill(0);
                 textSize(20);
                 text(`Score: ${score}`, 20, 30);
             }
         }
-        
+
         function checkCollision() {
             if (!gameStarted) return;
             if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
-    score++;
-    if (score % 5 === 0) {
-        teaList.push(new Item(random(width), 0, '🍵', teaSpeed));
-    }
-    teaSpeed += 0.1; // スコアごとにお茶のスピードを増加
-    teaList.forEach(tea => tea.speed = teaSpeed);
+                score++;
+                if (score % 5 === 0) {
+                    teaList.push(new Item(random(width), 0, '🍵', teaSpeed));
+                }
+                teaSpeed += 0.1;
+                teaList.forEach(tea => tea.speed = teaSpeed);
                 onigiri.reset();
             }
             if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30)) {
@@ -153,47 +151,9 @@ let teaList = []; // 障害物リスト
                 noLoop();
             }
         }
-        
+
         function restartGame() {
-    console.log("Restarting game");
-    document.getElementById("gameOverScreen").classList.add("hidden");
-    startGame();
-}
-        
-        class Player {
-            constructor() {
-                this.x = width / 2;
-                this.symbol = '🚛';
-            }
-            move() {
-                this.x = constrain(mouseX, 0, width);
-            }
-            show() {
-                textSize(25);
-                text(this.symbol, this.x, height - 50);
-            }
-        }
-        
-        class Item {
-            constructor(x, y, symbol, speed) {
-                this.x = x;
-                this.y = y;
-                this.symbol = symbol;
-                this.speed = speed;
-            }
-            fall() {
-                this.speed = teaSpeed;
-                this.y += this.speed;
-                if (this.y > height) this.reset();
-            }
-            reset() {
-                this.x = random(width);
-                this.y = 0;
-            }
-            show() {
-                textSize(30);
-                text(this.symbol, this.x, this.y);
-            }
+            startGame();
         }
     </script>
 </body>
