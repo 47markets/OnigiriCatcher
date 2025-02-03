@@ -65,7 +65,7 @@
         let gameOver = false;
 
         function setup() {
-            let canvas = createCanvas(windowWidth, windowHeight);
+            let canvas = createCanvas(windowWidth * 0.9, windowHeight * 0.9);
             canvas.style('display', 'block');
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
@@ -74,6 +74,8 @@
         }
 
         function startGame() {
+    bgm.volume = 0.5;
+    bgm.play();
     setTimeout(() => bgm.play(), 100);
             document.getElementById("startScreen").classList.add("hidden");
             gameStarted = true;
@@ -108,6 +110,17 @@
             }
             if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
                 gameOver = true;
+    document.getElementById("gameOverScreen").classList.remove("hidden");
+    document.getElementById("finalScore").textContent = score;
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem("highScore", highScore);
+    }
+    document.getElementById("highScore").textContent = highScore;
+    let banner = document.getElementById("banner");
+    banner.src = Math.random() < 0.5 ? "pr_image1.png" : "pr_image2.png";
+    banner.style.display = "block";
+    setTimeout(() => document.getElementById("gameOverButtons").classList.remove("hidden"), 500);
     document.getElementById("startScreen").classList.remove("hidden");
                 noLoop();
             }
