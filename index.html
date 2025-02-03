@@ -156,10 +156,13 @@ let teaList = []; // 障害物リスト
         
         function restartGame() {
     console.log("Restarting game");
+    gameStarted = true;
+    gameOver = false;
+    console.log("Restarting game");
             document.getElementById("gameOverScreen").classList.add("hidden");
             teaSpeed = 5; // リセット
-    teaList.forEach(tea => tea.reset());
-    setTimeout(() => startGame(), 50);
+    teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
+    startGame();
         }
         
         class Player {
