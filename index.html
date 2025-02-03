@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Onigiri Catcher2</title>
+    <title>Onigiri Catcher</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <style>
         body {
@@ -11,11 +11,16 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
             overflow: hidden;
+            margin: 0;
         }
         canvas {
             display: block;
+            max-width: 100vw;
+            max-height: 100vh;
+        }
+        .hidden {
+            display: none;
         }
         .screen {
             position: absolute;
@@ -25,89 +30,107 @@
             background: white;
             padding: 20px;
             border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             text-align: center;
+            width: 90%;
+            max-width: 400px;
         }
-        .hidden {
-            display: none;
+        .button {
+            font-size: 20px;
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 80%;
+            max-width: 300px;
+        }
+        .button:hover {
+            background-color: #ddd;
         }
     </style>
 </head>
 <body>
     <div id="startScreen" class="screen">
         <h1>Onigiri Catcher</h1>
-        <p>おにぎりをキャッチして、お茶や障害物を避けろ！</p>
-        <button onclick="startGame()">Game Start</button>
+        <p>おにぎりをキャッチして<br>お茶を避けろ！</p>
+        <button class="button" onclick="startGame()">Game Start</button>
     </div>
+    <audio id="bgm" loop>
+        <source src="bgm.mp3" type="audio/mpeg">
+    </audio>
     <div id="gameOverScreen" class="screen hidden">
         <h2>Game Over!</h2>
-        <p id="finalScore"></p>
-        <button onclick="restartGame()">Play Again</button>
+        <button class="button" onclick="restartGame()">Play Again</button>
+        <button class="button" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">４７市</button>
+        <button class="button" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
     </div>
     <script>
-        let player;
-        let onigiri;
-        let obstacles = [];
+        let onigiri, tea, player;
         let score = 0;
         let gameOver = false;
-
-        function setup() {
-            createCanvas(windowWidth, windowHeight);
-            player = new Player();
-            onigiri = new Item(random(width), 0, '🍙');
+        let gameStarted = false;
+        let bgm;
+        
+        function preload() {
+            bgm = document.getElementById("bgm");
         }
 
-        function draw() {
-            background(220);
-            if (gameOver) return;
-            
-            player.show();
-            player.move();
-            onigiri.fall();
-            onigiri.show();
-            
-            obstacles.forEach(obs => {
-                obs.fall();
-                obs.show();
-                if (obs.collidesWith(player)) {
-                    endGame();
-                }
-            });
-
-            if (onigiri.collidesWith(player)) {
-                score++;
-                onigiri.reset();
-                if (score % 5 === 0) addObstacle();
-            }
-            
-            fill(0);
-            textSize(20);
-            text(`スコア: ${score}`, 20, 30);
+        function setup() {
+            let canvas = createCanvas(windowWidth, windowHeight);
+            canvas.style('display', 'block');
+            player = new Player();
+            onigiri = new Item(random(width), 0, '🍙', 5);
+            tea = new Item(random(width), 0, '🍵', 7);
+            noLoop();
         }
 
         function startGame() {
             document.getElementById("startScreen").classList.add("hidden");
+            gameStarted = true;
             gameOver = false;
             score = 0;
-            obstacles = [];
+            onigiri.reset();
+            tea.reset();
+            bgm.play();
             loop();
         }
 
+        function draw() {
+            background(220);
+            if (gameStarted && !gameOver) {
+                player.show();
+                player.move();
+                onigiri.fall();
+                onigiri.show();
+                tea.fall();
+                tea.show();
+                checkCollision();
+                fill(0);
+                textSize(20);
+                text(`スコア: ${score}`, 20, 30);
+            }
+        }
+        
+        function checkCollision() {
+            if (!gameStarted) return;
+
+            if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
+                score++;
+                onigiri.reset();
+            }
+            if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
+                gameOver = true;
+                document.getElementById("gameOverScreen").classList.remove("hidden");
+                bgm.pause();
+                noLoop();
+            }
+        }
+        
         function restartGame() {
             document.getElementById("gameOverScreen").classList.add("hidden");
             document.getElementById("startScreen").classList.remove("hidden");
-        }
-
-        function endGame() {
-            gameOver = true;
-            document.getElementById("finalScore").innerText = `Final Score: ${score}`;
-            document.getElementById("gameOverScreen").classList.remove("hidden");
-            noLoop();
-        }
-
-        function addObstacle() {
-            let types = ['🍵', '🍶', '🥤', '🍋'];
-            let emoji = random(types);
-            obstacles.push(new Item(random(width), 0, emoji));
         }
 
         class Player {
@@ -124,15 +147,17 @@
         }
 
         class Item {
-            constructor(x, y, emoji) {
+            constructor(x, y, emoji, speed) {
                 this.x = x;
                 this.y = y;
                 this.emoji = emoji;
-                this.speed = 5;
+                this.speed = speed;
             }
             fall() {
                 this.y += this.speed;
-                if (this.y > height) this.reset();
+                if (this.y > height) {
+                    this.reset();
+                }
             }
             show() {
                 textSize(32);
@@ -141,9 +166,6 @@
             reset() {
                 this.x = random(width);
                 this.y = 0;
-            }
-            collidesWith(player) {
-                return dist(this.x, this.y, player.x, height - 50) < 30;
             }
         }
     </script>
