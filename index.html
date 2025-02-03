@@ -78,6 +78,7 @@
     <div id="gameContainer"></div>
     <script>
         let player, onigiri, tea;
+let teaSpeed = 5;
         let score = 0;
         let highScore = localStorage.getItem("highScore") || 0;
         let gameStarted = false;
@@ -90,7 +91,7 @@
             bgm = document.getElementById("bgm");
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
-            tea = new Item(random(width), 0, '🍵', 7);
+            tea = new Item(random(width), 0, '🍵', teaSpeed);
             noLoop();
         }
         
@@ -127,6 +128,7 @@
         function checkCollision() {
             if (!gameStarted) return;
             if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
+    teaSpeed += 0.1; // スコアごとにお茶のスピードを増加
                 score++;
                 onigiri.reset();
             }
@@ -170,6 +172,7 @@
                 this.speed = speed;
             }
             fall() {
+                this.speed = teaSpeed;
                 this.y += this.speed;
                 if (this.y > height) this.reset();
             }
