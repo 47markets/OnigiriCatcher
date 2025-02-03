@@ -1,5 +1,77 @@
-<p>Score: <span id="finalScore">0</span></p>
-    <p>High Score: <span id="highScore">0</span></p>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Onigiri Catcher</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+            touch-action: none;
+        }
+        #gameContainer {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        canvas {
+            display: block;
+            max-width: 100vw;
+            max-height: 100vh;
+        }
+        .hidden {
+            display: none;
+        }
+        .screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        .button {
+            font-size: 20px;
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 80%;
+            max-width: 300px;
+        }
+        .button:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div id="startScreen" class="screen">
+        <h1>Onigiri Catcher</h1>
+        <p>おにぎりをキャッチして<br>お茶を避けろ！</p>
+        <button class="button" onclick="startGame()">Game Start</button>
+    </div>
+    <audio id="bgm" loop>
+        <source src="bgm.mp3" type="audio/mpeg">
+    </audio>
+    <div id="gameOverScreen" class="screen hidden">
+        <h2>Game Over!</h2>
+        <p>Score: <span id="finalScore">0</span></p>
         
     <img src="pr_image1.png" alt="Game Over Image" style="width: 80%; max-width: 300px; margin-top: 10px;">
         <button class="button" onclick="restartGame()">Play Again</button>
@@ -83,11 +155,11 @@ let teaList = []; // 障害物リスト
         }
         
         function restartGame() {
+    console.log("Restarting game");
             document.getElementById("gameOverScreen").classList.add("hidden");
-    document.getElementById("startScreen").classList.remove("hidden");
             teaSpeed = 5; // リセット
     teaList.forEach(tea => tea.reset());
-    startGame();
+    setTimeout(() => startGame(), 50);
         }
         
         class Player {
