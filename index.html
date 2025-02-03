@@ -4,13 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Onigiri Catcher</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js">function restartGame() {
-            gameStarted = true;
-            document.getElementById("gameOverScreen").classList.add("hidden");
-            document.getElementById("gameOverButtons").classList.add("hidden");
-            startGame();
-        }
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <style>
         body {
             position: relative;
@@ -56,24 +50,6 @@
         .button:hover {
             background-color: #ddd;
         }
-        #banner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 66%;
-            max-width: 400px;
-            display: none;
-        }
-        #closeBanner {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: white;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
@@ -82,47 +58,19 @@
         <p>おにぎりをキャッチして<br>お茶を避けろ！</p>
         <button class="button" onclick="startGame()">Game Start</button>
     </div>
-    <audio id="bgm" loop>
-        <source src="bgm.mp3" type="audio/mpeg">
-    </audio>
-    <div id="gameOverScreen" class="screen hidden">
-        <h2>Game Over!</h2>
-        <p>Score: <span id="finalScore">0</span></p>
-        <p>High Score: <span id="highScore">0</span></p>
-        <img id="banner" src="" alt="Advertisement">
-        <button id="closeBanner" onclick="closeBanner()">✖</button>
-        <div id="gameOverButtons" class="hidden">
-            <button class="button" onclick="restartGame()">Play Again</button>
-            <button class="button" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">４７市</button>
-            <button class="button" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
-        </div>
-    </div>
     <script>
-        let onigiri, tea, player;
-        let initialSpeed = 5;
+        let player, onigiri, tea;
         let score = 0;
-        let highScore = localStorage.getItem("highScore") || 0;
-        let gameOver = false;
         let gameStarted = false;
-        let bgm;
-        
-        function preload() {
-            bgm = document.getElementById("bgm");
-        }
+        let gameOver = false;
 
         function setup() {
-    let canvas = createCanvas(320, 480);
-    canvas.style('display', 'block');
-    player = new Player();
-    onigiri = new Item(random(width), 0, '🍙', initialSpeed);
-    tea = new Item(random(width), 0, '🍵', initialSpeed + 2);
-    loop(); // 追加
             let canvas = createCanvas(320, 480);
             canvas.style('display', 'block');
             player = new Player();
-            onigiri = new Item(random(width), 0, '🍙', initialSpeed);
-            tea = new Item(random(width), 0, '🍵', initialSpeed + 2);
-            
+            onigiri = new Item(random(width), 0, '🍙', 5);
+            tea = new Item(random(width), 0, '🍵', 7);
+            noLoop();
         }
 
         function startGame() {
@@ -132,12 +80,10 @@
             score = 0;
             onigiri.reset();
             tea.reset();
-            bgm.play();
             loop();
         }
 
         function draw() {
-    console.log('gameStarted:', gameStarted, 'gameOver:', gameOver);
             background(220);
             if (gameStarted && !gameOver) {
                 player.show();
@@ -152,44 +98,53 @@
                 text(`Score: ${score}`, 20, 30);
             }
         }
-        
+
         function checkCollision() {
             if (!gameStarted) return;
             if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
                 score++;
-                onigiri.speed = Math.min(onigiri.speed + 0.1, 10);
-                tea.speed = Math.min(tea.speed + 0.1, 12);
                 onigiri.reset();
             }
             if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
                 gameOver = true;
-                document.getElementById("finalScore").textContent = score;
-                if (score > highScore) {
-                    highScore = score;
-                    localStorage.setItem("highScore", highScore);
-                }
-                document.getElementById("highScore").textContent = highScore;
-                let banner = document.getElementById("banner");
-                banner.src = Math.random() < 0.5 ? "pr_image1.png" : "pr_image2.png";
-                banner.style.display = "block";
-                document.getElementById("gameOverScreen").classList.remove("hidden");
-                bgm.pause();
                 noLoop();
             }
         }
-        
-        function closeBanner() {
-    let banner = document.getElementById("banner");
-    banner.style.opacity = "0";
-    setTimeout(() => { 
-        banner.style.display = "none"; 
-        document.getElementById("gameOverButtons").classList.remove("hidden");
-    }, 1000);
-            let banner = document.getElementById("banner");
-            banner.style.opacity = "0";
-            setTimeout(() => { banner.style.display = "none"; }, 500);
-            document.getElementById("banner").style.display = "none";
-            setTimeout(() => document.getElementById("gameOverButtons").classList.remove("hidden"), 1000);
+
+        class Player {
+            constructor() {
+                this.x = width / 2;
+            }
+            show() {
+                textSize(32);
+                text('🚛', this.x, height - 50);
+            }
+            move() {
+                this.x = mouseX;
+            }
+        }
+
+        class Item {
+            constructor(x, y, emoji, speed) {
+                this.x = x;
+                this.y = y;
+                this.emoji = emoji;
+                this.speed = speed;
+            }
+            fall() {
+                this.y += this.speed;
+                if (this.y > height) {
+                    this.reset();
+                }
+            }
+            show() {
+                textSize(32);
+                text(this.emoji, this.x, this.y);
+            }
+            reset() {
+                this.x = random(width);
+                this.y = 0;
+            }
         }
     </script>
 </body>
