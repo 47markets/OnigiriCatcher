@@ -157,23 +157,8 @@ let teaList = []; // 障害物リスト
         function restartGame() {
     console.log("Restarting game");
     document.getElementById("gameOverScreen").classList.add("hidden");
-    gameStarted = true;
-    gameOver = false;
-    teaSpeed = 5; // リセット
-    score = 0;
-    teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
-    onigiri.reset();
-    player.x = width / 2; // プレイヤーの位置をリセット
-    loop(); // ループを再開する
-    console.log("Restarting game");
-    gameStarted = true;
-    gameOver = false;
-    console.log("Restarting game");
-            document.getElementById("gameOverScreen").classList.add("hidden");
-            teaSpeed = 5; // リセット
-    teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
-    
-        }
+    startGame();
+}
         
         class Player {
             constructor() {
