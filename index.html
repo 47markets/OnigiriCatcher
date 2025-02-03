@@ -80,11 +80,32 @@
     <script>
         let player, onigiri;
 
+class Item {
+    constructor(x, y, symbol, speed) {
+        this.x = x;
+        this.y = y;
+        this.symbol = symbol;
+        this.speed = speed;
+    }
+    fall() {
+        this.y += this.speed;
+        if (this.y > height) {
+            this.reset();
+        }
+    }
+    reset() {
+        this.x = random(width);
+        this.y = 0;
+    }
+    show() {
+        textSize(25);
+        text(this.symbol, this.x, this.y);
+    }
+}
+
 class Player {
     constructor() {
         console.log("Player initialized");
-        this.x = width / 2;
-        this.symbol = '🚛';
         this.x = width / 2;
         this.symbol = '🚛';
     }
