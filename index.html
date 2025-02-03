@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Onigiri Catcher</title>
+    <title>Onigiri Catcher3</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <style>
         body {
@@ -67,7 +67,9 @@
         <button class="button" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
     </div>
     <script>
-        let onigiri, tea, player;
+        let onigiri, player;
+        let teas = [];
+        let maxTeas = 8;
         let score = 0;
         let gameOver = false;
         let gameStarted = false;
@@ -82,7 +84,7 @@
             canvas.style('display', 'block');
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
-            tea = new Item(random(width), 0, '🍵', 7);
+            teas.push(new Item(random(width), 0, '🍵', 7));
             noLoop();
         }
 
@@ -104,8 +106,10 @@
                 player.move();
                 onigiri.fall();
                 onigiri.show();
+                teas.forEach(tea => {
                 tea.fall();
                 tea.show();
+            });
                 checkCollision();
                 fill(0);
                 textSize(20);
@@ -119,9 +123,18 @@
             if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
                 score++;
                 onigiri.reset();
+                if (score % 5 === 0 && teas.length < maxTeas) {
+                    teas.push(new Item(random(width), 0, '🍵', 7));
+                }
             }
-            if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
-                gameOver = true;
+            teas.forEach(tea => {
+                if (dist(player.x, height - 50, tea.x, tea.y) < 30) {
+                    gameOver = true;
+                    document.getElementById("gameOverScreen").classList.remove("hidden");
+                    bgm.pause();
+                    noLoop();
+                }
+            });
                 document.getElementById("gameOverScreen").classList.remove("hidden");
                 bgm.pause();
                 noLoop();
