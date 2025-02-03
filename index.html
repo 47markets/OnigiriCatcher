@@ -136,6 +136,7 @@ let teaList = []; // 障害物リスト
         teaList.push(new Item(random(width), 0, '🍵', teaSpeed));
     }
     teaSpeed += 0.1; // スコアごとにお茶のスピードを増加
+    teaList.forEach(tea => tea.speed = teaSpeed);
                 onigiri.reset();
             }
             if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30)) {
