@@ -89,6 +89,7 @@ let teaList = []; // 障害物リスト
         function setup() {
             let canvas = createCanvas(window.innerWidth * 0.9, window.innerHeight);
             canvas.parent("gameContainer");
+            canvas.position(canvas.x, canvas.y - 5);
             bgm = document.getElementById("bgm");
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
