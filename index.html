@@ -41,6 +41,8 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
             display: none;
         }
         .screen {
+    width: 80%;
+    max-width: 350px;
             background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); /* おしゃれなグラデーション背景 */
             position: absolute;
             top: 50%;
@@ -92,7 +94,7 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
 <body>
     <div id="startScreen" class="screen" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);">
         
-        <h3 style="margin-bottom: 10px; color: #555;">47市 presents</h3>
+        <h3 style="margin-bottom: 10px; color: #555;">４７市 presents</h3>
         <h1>Onigiri Catcher</h1>
         <p>おにぎりをキャッチして<br>お茶を避けろ！</p>
         <button class="button" onclick="startGame()">Game Start</button>
@@ -111,8 +113,8 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
 </a>
         <p id="countdownTimer">3</p>
 <button id="playAgainButton" class="button hidden" onclick="restartGame()">Play Again</button>
-<button id="instagramButton" class="button hidden" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">47市</button>
-<button id="giftButton" class="button hidden" onclick="window.open('https://shop.47markets.org/', '_blank')">47市ギフト</button>
+<button id="instagramButton" class="button hidden" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">４７市</button>
+<button id="giftButton" class="button hidden" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
     </div>
     <div id="gameContainer"></div>
     <script>
