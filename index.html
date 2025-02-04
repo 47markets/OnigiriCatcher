@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Onigiri Catcher</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js">document.getElementById("batsuImage").addEventListener("click", function(event) {
+    event.preventDefault(); // クリックのデフォルト動作を防ぐ
+    document.getElementById("gameOverImage").style.display = "none";
+    document.getElementById("batsuImage").style.display = "none";
+});
+</script>
     <style>
         body {
             position: relative;
