@@ -108,12 +108,49 @@
         }
 
         function checkCollision() {
+    if (!gameStarted) return;
+    
+    if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
+        score++;
+        teaSpeed += 0.1;
+        if (score % 5 === 0) {
+            teaList.push(new Item(random(width), 0, '🍵', teaSpeed));
+        }
+        onigiri.reset();
+    }
+    
+    if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30) || sakeList.some(sake => dist(player.x, height - 50, sake.x, sake.y) < 30)) {
+        triggerGameOver();
+    }
             if (!gameStarted) return;
             if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) { score++; onigiri.reset(); if (score % 10 === 0) sakeList.push(new Sake(random(width), 0)); }
             if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30) || sakeList.some(sake => dist(player.x, height - 50, sake.x, sake.y) < 30)) triggerGameOver();
         }
 
         function triggerGameOver() {
+    gameOver = true;
+    document.getElementById("gameOverScreen").classList.remove("hidden");
+    document.getElementById("finalScore").textContent = score;
+    if (score > highScore) { highScore = score; localStorage.setItem("highScore", highScore); }
+    document.getElementById("highScore").textContent = highScore;
+    
+    // ゲームオーバー画像を 4 秒間表示
+    document.getElementById("gameOverImage").style.display = "block";
+    let countdown = 4;
+    document.getElementById("countdownTimer").textContent = `あと ${countdown} 秒で再挑戦できます`;
+    
+    let countdownInterval = setInterval(() => {
+        countdown--;
+        document.getElementById("countdownTimer").textContent = `あと ${countdown} 秒で再挑戦できます`;
+        if (countdown === 0) {
+            clearInterval(countdownInterval);
+            document.getElementById("gameOverImage").style.display = "none";
+            document.getElementById("countdownTimer").style.display = "none";
+            document.getElementById("playAgainButton").classList.remove("hidden");
+            document.getElementById("gameOverScreen").classList.add("show-buttons");
+        }
+    }, 1000);
+    noLoop();
             gameOver = true;
             document.getElementById("gameOverScreen").classList.remove("hidden");
             document.getElementById("finalScore").textContent = score;
