@@ -87,7 +87,8 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
     <img id="gameOverImage" src="pr_image1.png" alt="Game Over Image" style="width: 90%; max-width: 400px; height: auto; margin-top: 10px;">
     
 </a>
-        <button class="button" onclick="restartGame()">Play Again</button>
+        <p id="countdownTimer">3</p>
+<button id="playAgainButton" class="button hidden" onclick="restartGame()">Play Again</button>
     </div>
     <div id="gameContainer"></div>
     <script>
@@ -199,6 +200,20 @@ class Player {
             if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30)) {
                 gameOver = true;
                 document.getElementById("gameOverScreen").classList.remove("hidden");
+    let countdown = 3;
+    document.getElementById("countdownTimer").textContent = countdown;
+    let countdownInterval = setInterval(() => {
+        countdown--;
+        document.getElementById("countdownTimer").textContent = countdown;
+        if (countdown === 0) {
+            clearInterval(countdownInterval);
+            document.getElementById("gameOverImage").style.display = "none";
+            document.getElementById("countdownTimer").style.display = "none";
+            setTimeout(() => {
+                document.getElementById("playAgainButton").classList.remove("hidden");
+            }, 1000);
+        }
+    }, 1000);
                 setTimeout(() => {
                     document.getElementById("gameOverImage").style.display = "none";
                 }, 3000);
