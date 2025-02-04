@@ -41,6 +41,7 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
             display: none;
         }
         .screen {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); /* おしゃれなグラデーション背景 */
             position: absolute;
             top: 50%;
             left: 50%;
@@ -68,6 +69,7 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
             background-color: #ddd;
         }
     #gameOverScreen {
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); /* おしゃれなグラデーション背景 */
     min-height: 150px; /* 画像が消えても空白が残らないように調整 */
     transition: all 0.5s ease-in-out;
 }
@@ -89,11 +91,12 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
 </head>
 <body>
     <div id="startScreen" class="screen">
-        <p style="font-size: 14px; color: #777;">※ Safari、Chrome推奨</p>
+        
         <h3 style="margin-bottom: 10px; color: #555;">47市 presents</h3>
         <h1>Onigiri Catcher</h1>
         <p>おにぎりをキャッチして<br>お茶を避けろ！</p>
         <button class="button" onclick="startGame()">Game Start</button>
+        <p style="font-size: 14px; color: #777; margin-top: 10px;">※ Safari、Chrome推奨</p>
     </div>
     <audio id="bgm" loop>
         <source src="bgm.mp3" type="audio/mpeg">
