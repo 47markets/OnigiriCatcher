@@ -87,6 +87,9 @@
 
         function setup() {
     window.startGame = startGame;
+    window.startGame = startGame;
+function startGame() {
+    document.getElementById("bgm").play();
             createCanvas(window.innerWidth * 0.9, window.innerHeight);
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
@@ -138,7 +141,7 @@
 }
 } }
             if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30) || sakeList.some(sake => dist(player.x, height - 50, sake.x, sake.y) < 30)) triggerGameOver();
-    //    }
+        }
 
         function triggerGameOver() {
     gameOver = true;
@@ -148,7 +151,7 @@
     document.getElementById("highScore").textContent = highScore;
     
     // ゲームオーバー画像を 4 秒間表示
-    let isPrImage1 = Math.random() < 0.5;
+    isPrImage1 = Math.random() < 0.5;
 let gameOverImage = document.getElementById("gameOverImage");
 gameOverImage.src = isPrImage1 ? "pr_image1.png" : "pr_image2.png";
 gameOverImage.onclick = function() {
