@@ -73,7 +73,9 @@
         <h2>Game Over!</h2>
         <p>Score: <span id="finalScore">0</span></p>
         <p>High Score: <span id="highScore">0</span></p>
-        <img src="pr_image1.png" alt="Game Over Image" style="width: 80%; max-width: 300px; margin-top: 10px;">
+        <a href="https://shop.47markets.org/" target="_blank">
+    <img src="pr_image1.png" alt="Game Over Image" style="width: 90%; max-width: 400px; height: auto; margin-top: 10px;">
+</a>
         <button class="button" onclick="restartGame()">Play Again</button>
     </div>
     <div id="gameContainer"></div>
@@ -98,7 +100,7 @@ class Item {
         this.y = 0;
     }
     show() {
-        textSize(25);
+        textSize(30);
         text(this.symbol, this.x, this.y);
     }
 }
