@@ -4,19 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Onigiri Catcher</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"> // クリックのデフォルト動作を防ぐ
-    document.getElementById("gameOverImage").style.display = "none";
-    document.getElementById("batsuImage").style.display = "none";
-});
-document.getElementById("batsuImage").addEventListener("click", function(event) {
-    event.stopPropagation(); // 🚫 親要素（リンク）のクリックイベントを無効化
-    document.getElementById("gameOverImage").style.display = "none";
-    document.getElementById("batsuImage").style.display = "none";
-});
-</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <style>
         body {
-            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -24,252 +14,58 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
             overflow: hidden;
             margin: 0;
             touch-action: none;
+            background-color: #f0f0f0;
         }
         #gameContainer {
-            width: 100%;
-            height: 100%;
+            width: 90%;
+            height: 90%;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-        canvas {
-            display: block;
-            max-width: 100vw;
-            max-height: 100vh;
-        }
-        .hidden {
-            display: none;
-        }
         .screen {
-           
-            width: 80%;
+            width: 85%;
             max-width: 350px;
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); /* おしゃれなグラデーション背景 */
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
         .button {
-            font-size: 20px;
-            padding: 15px 30px;
-            margin: 10px;
+            font-size: 18px;
+            padding: 12px 25px;
+            margin: 8px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: 0.3s;
             width: 80%;
-            max-width: 300px;
         }
         .button:hover {
             background-color: #ddd;
         }
-    #gameOverScreen {
-    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-    padding: 15px 20px;
-    transition: all 0.5s ease-in-out;
-}
-
-#gameOverButtons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    width: 100%;
-}
-
-.button {
-    width: 80%;
-    max-width: 250px;
-}
-
-</style>
+    </style>
 </head>
 <body>
-    <div id="startScreen" class="screen" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);">
-        
-        <h3 style="margin-bottom: 10px; color: #555;">４７市 presents</h3>
-        <h1>Onigiri Catcher</h1>
-        <p>おにぎりをキャッチして<br>お茶を避けろ！</p>
-        <button class="button" onclick="startGame()">Game Start</button>
-        <p style="font-size: 14px; color: #777; margin-top: 10px;">※ Safari、Chrome推奨</p>
-    </div>
-    <audio id="bgm" loop>
-        <source src="bgm.mp3" type="audio/mpeg">
-    </audio>
+    <div id="gameContainer"></div>
     <div id="gameOverScreen" class="screen hidden">
         <h2>Game Over!</h2>
-        <p>Score: <span id="finalScore">0</span></p>
-        <p>High Score: <span id="highScore">0</span></p>
-        <a id="gameOverLink" href="https://shop.47markets.org/" target="_blank" style="position: relative; display: flex; justify-content: center; width: 100%;">
-    <img id="gameOverImage" src="pr_image1.png" alt="Game Over Image" style="width: 90%; max-width: 400px; height: auto; margin-top: 10px; display: block; margin: 0 auto;">
-    
-</a>
-        <p id="countdownTimer">3</p>
-<button id="playAgainButton" class="button hidden" onclick="restartGame()">Play Again</button>
-<button id="instagramButton" class="button hidden" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">４７市</button>
-<button id="giftButton" class="button hidden" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
+        <p>Score: <span id="finalScore">0</span> | High Score: <span id="highScore">0</span></p>
+        <button id="playAgainButton" class="button hidden" onclick="restartGame()">Play Again</button>
+        <button id="instagramButton" class="button hidden" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">４７市</button>
+        <button id="giftButton" class="button hidden" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
     </div>
-    <div id="gameContainer"></div>
     <script>
-        let player, onigiri;
-
-class Item {
-    constructor(x, y, symbol, speed) {
-        this.x = x;
-        this.y = y;
-        this.symbol = symbol;
-        this.speed = speed;
-    }
-    fall() {
-        this.y += this.speed;
-        if (this.y > height) {
-            this.reset();
-        }
-    }
-    reset() {
-        this.x = random(0, width - 30);
-        this.y = 0;
-    }
-    show() {
-        textSize(30);
-        text(this.symbol, this.x, this.y);
-    }
-}
-
-class Player {
-    constructor() {
-        console.log("Player initialized");
-        this.x = width / 2;
-        this.symbol = '🚛';
-    }
-    move() {
-        this.x = constrain(mouseX, 0, width - 40);
-    }
-    show() {
-        textSize(30);
-        text(this.symbol, this.x, height - 50);
-    }
-}
-        let teaSpeed = 5;
-        let teaList = [];
-        let score = 0;
-        let highScore = localStorage.getItem("highScore") || 0;
+        let player, onigiri, teas = [];
         let gameStarted = false;
         let gameOver = false;
-        let bgm;
-
-        function setup() {
-    console.log("Setup started");
-            let canvasHeight = window.innerHeight;
-            let canvas = createCanvas(window.innerWidth * 0.9, canvasHeight);
-            canvas.parent("gameContainer");
-            bgm = document.getElementById("bgm");
-            player = new Player();
-            onigiri = new Item(random(width), 0, '🍙', 5);
-            console.log("Setup complete, noLoop() called");
-    noLoop();
-        }
-
-        function startGame() {
-    document.getElementById("countdownTimer").style.display = "block";
-    document.getElementById("countdownTimer").textContent = `あと 4 秒で再挑戦できます`;
-    document.getElementById("gameOverImage").style.display = "block";
-    document.getElementById("playAgainButton").classList.add("hidden");
-    document.getElementById("instagramButton").classList.add("hidden");
-    document.getElementById("giftButton").classList.add("hidden");
-    console.log("Game started");
-            document.getElementById("startScreen").classList.add("hidden");
-    document.getElementById("gameOverScreen").classList.add("hidden");
-            document.getElementById("gameOverScreen").classList.add("hidden");
-            gameStarted = true;
-            gameOver = false;
-            score = 0;
-            teaSpeed = 5;
-            teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
-            onigiri.reset();
-            player.x = width / 2;
-            bgm.volume = 0.5;
-            bgm.play();
-            console.log("Loop started");
-    console.log("Loop started");
-    loop();
-        }
-
-        function draw() {
-            background(220);
-            if (gameStarted && !gameOver) {
-                player.show();
-                player.move();
-                onigiri.fall();
-                onigiri.show();
-                teaList.forEach(tea => tea.fall());
-                teaList.forEach(tea => tea.show());
-                checkCollision();
-                fill(0);
-                textSize(20);
-                text(`Score: ${score}`, 20, 30);
-            }
-        }
-
-        function checkCollision() {
-            if (!gameStarted) return;
-            if (onigiri.x > player.x - 15 && onigiri.x < player.x + 15 && onigiri.y > height - 50) {
-                score++;
-                if (score % 5 === 0) {
-                    teaList.push(new Item(random(width), 0, '🍵', teaSpeed));
-                }
-                teaSpeed += 0.1;
-                teaList.forEach(tea => tea.speed = teaSpeed);
-                onigiri.reset();
-            }
-            if (teaList.some(tea => tea.x > player.x - 15 && tea.x < player.x + 15 && tea.y > height - 50)) {
-                gameOver = true;
-                document.getElementById("gameOverScreen").classList.remove("hidden");
-    let countdown = 4;
-    document.getElementById("countdownTimer").textContent = `あと ${countdown} 秒で再挑戦できます`;
-    let countdownInterval = setInterval(() => {
-        countdown--;
-        document.getElementById("countdownTimer").textContent = `あと ${countdown} 秒で再挑戦できます`;
-        if (countdown === 0) {
-            clearInterval(countdownInterval);
-            document.getElementById("gameOverImage").style.display = "none";
-            document.getElementById("countdownTimer").style.display = "none";
-            setTimeout(() => {
-                document.getElementById("playAgainButton").classList.remove("hidden");
-            }, 1000);
-        }
-    }, 1000);
-                setTimeout(() => {
-    document.getElementById("gameOverImage").style.display = "none";
-    document.getElementById("gameOverScreen").style.minHeight = "auto";
-    document.getElementById("countdownTimer").style.display = "none";
-    document.getElementById("playAgainButton").classList.remove("hidden");
-    document.getElementById("instagramButton").classList.remove("hidden");
-    document.getElementById("giftButton").classList.remove("hidden");
-    document.getElementById("playAgainButton").classList.remove("hidden");
-}, 4000);
-    let isPrImage1 = Math.random() < 0.5;
-    document.getElementById("gameOverImage").style.display = "block";
-document.getElementById("gameOverImage").src = isPrImage1 ? "pr_image1.png" : "pr_image2.png";
-    document.getElementById("gameOverLink").href = isPrImage1 ? "https://shop.47markets.org/" : "https://www.instagram.com/47markets/";
-    document.getElementById("gameOverLink").setAttribute("target", "_blank");
-    document.getElementById("gameOverLink").setAttribute("target", "_blank");
-    
-                document.getElementById("finalScore").textContent = score;
-                if (score > highScore) {
-                    highScore = score;
-                    localStorage.setItem("highScore", highScore);
-                }
-                document.getElementById("highScore").textContent = highScore;
-                noLoop();
-            }
-        }
+        let score = 0;
+        let highScore = localStorage.getItem("highScore") || 0;
 
         function restartGame() {
             startGame();
