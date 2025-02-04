@@ -73,12 +73,9 @@
         <h2>Game Over!</h2>
         <p>Score: <span id="finalScore">0</span></p>
         <p>High Score: <span id="highScore">0</span></p>
-        <div id="gameOverContainer" style="position: relative; display: inline-block;">
-    <a id="gameOverLink" href="https://shop.47markets.org/" target="_blank">
-        <img id="gameOverImage" src="pr_image1.png" alt="Game Over Image" style="width: 90%; max-width: 400px; height: auto; margin-top: 10px;">
-    </a>
-    <img id="batsuImage" src="batsu.png" alt="Close" style="position: absolute; top: 5px; right: 5px; width: 30px; height: 30px; cursor: pointer;">
-</div>
+        <a id="gameOverLink" href="https://shop.47markets.org/" target="_blank">
+    <img id="gameOverImage" src="pr_image1.png" alt="Game Over Image" style="width: 90%; max-width: 400px; height: auto; margin-top: 10px;">
+</a>
         <button class="button" onclick="restartGame()">Play Again</button>
     </div>
     <div id="gameContainer"></div>
@@ -103,7 +100,7 @@ class Item {
         this.y = 0;
     }
     show() {
-        textSize(40);
+        textSize(35);
         text(this.symbol, this.x, this.y);
     }
 }
@@ -118,7 +115,7 @@ class Player {
         this.x = constrain(mouseX, 0, width);
     }
     show() {
-        textSize(25);
+        textSize(50);
         text(this.symbol, this.x, height - 50);
     }
 }
@@ -191,16 +188,6 @@ class Player {
             if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30)) {
                 gameOver = true;
                 document.getElementById("gameOverScreen").classList.remove("hidden");
-    document.getElementById("gameOverContainer").classList.remove("hidden");
-    document.getElementById("batsuImage").classList.remove("hidden");
-    let isPrImage1 = Math.random() < 0.5;
-    document.getElementById("gameOverImage").src = isPrImage1 ? "pr_image1.png" : "pr_image2.png";
-    document.getElementById("gameOverLink").href = isPrImage1 ? "https://shop.47markets.org/" : "https://www.instagram.com/47markets/";
-    if (isPrImage1) {
-        document.getElementById("gameOverLink").setAttribute("target", "_blank");
-    } else {
-        document.getElementById("gameOverLink").removeAttribute("target");
-    }
     let isPrImage1 = Math.random() < 0.5;
     document.getElementById("gameOverImage").src = isPrImage1 ? "pr_image1.png" : "pr_image2.png";
     document.getElementById("gameOverLink").href = isPrImage1 ? "https://shop.47markets.org/" : "https://www.instagram.com/47markets/";
@@ -219,12 +206,7 @@ class Player {
             }
         }
 
-        document.getElementById("batsuImage").addEventListener("click", function() {
-    document.getElementById("gameOverContainer").classList.add("hidden");
-    document.getElementById("batsuImage").classList.add("hidden");
-});
-
-function restartGame() {
+        function restartGame() {
             startGame();
         }
     </script>
