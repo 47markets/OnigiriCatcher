@@ -155,6 +155,13 @@ document.getElementById("gameOverImage").style.display = "block";
         countdown--;
         document.getElementById("countdownTimer").textContent = `あと ${countdown} 秒で再挑戦できます`;
         if (countdown === 0) {
+    clearInterval(countdownInterval);
+    document.getElementById("gameOverImage").style.display = "none";
+    document.getElementById("countdownTimer").style.display = "none";
+    document.getElementById("instagramButton").classList.remove("hidden");
+    document.getElementById("giftButton").classList.remove("hidden");
+    document.getElementById("playAgainButton").classList.remove("hidden");
+    countdown = 4; // ２度目以降もカウントダウンをリセット
     document.getElementById("playAgainButton").classList.remove("hidden");
     document.getElementById("instagramButton").classList.remove("hidden");
     document.getElementById("giftButton").classList.remove("hidden");
