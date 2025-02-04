@@ -76,7 +76,9 @@
 
         class Player {
             constructor() { this.x = width / 2; this.symbol = '🚛'; }
-            move() { this.x = constrain(mouseX, 0, width - 30); }
+            move(inputX) {
+    this.x = constrain(inputX, 0, width - 30);
+} this.x = constrain(mouseX, 0, width - 30); }
             show() { textSize(30); text(this.symbol, this.x, height - 50); }
         }
 
@@ -104,7 +106,7 @@
         function draw() {
             background(220);
             if (gameStarted && !gameOver) {
-                player.show(); player.move();
+                player.show(); player.move(mouseX || (touches[0]?.x || 0));
                 onigiri.fall(); onigiri.show();
                 teaList.forEach(tea => { tea.fall(); tea.show(); });
                 sakeList.forEach(sake => { sake.fall(); sake.show(); });
