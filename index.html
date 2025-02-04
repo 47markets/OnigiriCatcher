@@ -86,6 +86,7 @@
         }
 
         function setup() {
+    window.startGame = startGame;
             createCanvas(window.innerWidth * 0.9, window.innerHeight);
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
@@ -129,7 +130,10 @@
         triggerGameOver();
     }
             if (!gameStarted) return;
-            if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) { score++; onigiri.reset(); if (score % 10 === 0) sakeList.push(new Sake(random(width), 0)); }
+            if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) { score++; onigiri.reset(); if (score % 10 === 0) {
+    console.log('🍶追加！');
+    sakeList.push(new Sake(random(width), 0));
+} }
             if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30) || sakeList.some(sake => dist(player.x, height - 50, sake.x, sake.y) < 30)) triggerGameOver();
         }
 
@@ -141,7 +145,9 @@
     document.getElementById("highScore").textContent = highScore;
     
     // ゲームオーバー画像を 4 秒間表示
-    document.getElementById("gameOverImage").style.display = "block";
+    let isPrImage1 = Math.random() < 0.5;
+document.getElementById("gameOverImage").src = isPrImage1 ? "pr_image1.png" : "pr_image2.png";
+document.getElementById("gameOverImage").style.display = "block";
     let countdown = 4;
     document.getElementById("countdownTimer").textContent = `あと ${countdown} 秒で再挑戦できます`;
     
@@ -149,7 +155,12 @@
         countdown--;
         document.getElementById("countdownTimer").textContent = `あと ${countdown} 秒で再挑戦できます`;
         if (countdown === 0) {
+    document.getElementById("playAgainButton").classList.remove("hidden");
+    document.getElementById("instagramButton").classList.remove("hidden");
+    document.getElementById("giftButton").classList.remove("hidden");
             clearInterval(countdownInterval);
+            document.getElementById("instagramButton").classList.remove("hidden");
+            document.getElementById("giftButton").classList.remove("hidden");
             document.getElementById("gameOverImage").style.display = "none";
             document.getElementById("countdownTimer").style.display = "none";
             document.getElementById("playAgainButton").classList.remove("hidden");
