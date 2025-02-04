@@ -200,7 +200,7 @@ class Player {
             if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30)) {
                 gameOver = true;
                 document.getElementById("gameOverScreen").classList.remove("hidden");
-    let countdown = 3;
+    let countdown = 6;
     document.getElementById("countdownTimer").textContent = countdown;
     let countdownInterval = setInterval(() => {
         countdown--;
@@ -215,8 +215,10 @@ class Player {
         }
     }, 1000);
                 setTimeout(() => {
-                    document.getElementById("gameOverImage").style.display = "none";
-                }, 3000);
+    document.getElementById("gameOverImage").style.display = "none";
+    document.getElementById("countdownTimer").style.display = "none";
+    document.getElementById("playAgainButton").classList.remove("hidden");
+}, 6000);
     let isPrImage1 = Math.random() < 0.5;
     document.getElementById("gameOverImage").src = isPrImage1 ? "pr_image1.png" : "pr_image2.png";
     document.getElementById("gameOverLink").href = isPrImage1 ? "https://shop.47markets.org/" : "https://www.instagram.com/47markets/";
