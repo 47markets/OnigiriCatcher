@@ -140,7 +140,7 @@ class Item {
         this.y = 0;
     }
     show() {
-        textSize(35);
+        textSize(30);
         text(this.symbol, this.x, this.y);
     }
 }
@@ -152,10 +152,10 @@ class Player {
         this.symbol = '🚛';
     }
     move() {
-        this.x = constrain(mouseX, 0, width - 50);
+        this.x = constrain(mouseX, 0, width - 40);
     }
     show() {
-        textSize(50);
+        textSize(40);
         text(this.symbol, this.x, height - 50);
     }
 }
@@ -222,7 +222,7 @@ class Player {
 
         function checkCollision() {
             if (!gameStarted) return;
-            if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
+            if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 25) {
                 score++;
                 if (score % 5 === 0) {
                     teaList.push(new Item(random(width), 0, '🍵', teaSpeed));
@@ -231,7 +231,7 @@ class Player {
                 teaList.forEach(tea => tea.speed = teaSpeed);
                 onigiri.reset();
             }
-            if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30)) {
+            if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 25)) {
                 gameOver = true;
                 document.getElementById("gameOverScreen").classList.remove("hidden");
     let countdown = 4;
