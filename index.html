@@ -7,6 +7,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <style>
         body {
+    overscroll-behavior: contain;
+    touch-action: none;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -52,13 +54,16 @@
             <p>Score: <span id="finalScore">0</span></p>
             <p>High Score: <span id="highScore">0</span></p>
         </div>
-        <img id="gameOverImage" src="pr_image1.png" style="width: 80%; max-width: 300px; margin-top: 10px;">
+        <img id="gameOverImage" style="width: 80%; max-width: 600px; height: auto; display: block; margin: 0 auto;">
         <p id="countdownTimer">4</p>
         <button class="button hidden" id="playAgainButton" onclick="restartGame()">Play Again</button>
         <button class="button hidden" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">４７市</button>
         <button class="button hidden" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
     </div>
-    <script>
+    <audio id="bgm" loop>
+    <source src="bgm.mp3" type="audio/mpeg">
+</audio>
+<script>
         let player, onigiri, teaList = [], sakeList = [], score = 0, highScore = localStorage.getItem("highScore") || 0;
         let gameStarted = false, gameOver = false, teaSpeed = 5;
         
@@ -88,6 +93,7 @@
         }
 
         function startGame() {
+    document.getElementById("bgm").play();
             document.getElementById("startScreen").classList.add("hidden");
             gameStarted = true; gameOver = false; score = 0; teaSpeed = 5;
             teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
