@@ -80,7 +80,7 @@
         <p>High Score: <span id="highScore">0</span></p>
         <a id="gameOverLink" href="https://shop.47markets.org/" target="_blank" style="position: relative; display: inline-block;">
     <img id="gameOverImage" src="pr_image1.png" alt="Game Over Image" style="width: 90%; max-width: 400px; height: auto; margin-top: 10px;">
-    <img id="batsuImage" src="batsu.png" alt="Close Button" style="position: absolute; top: 5px; right: 5px; width: 40px; height: 40px;">
+    <img id="batsuImage" src="batsu.png" alt="Close Button" style="position: absolute; top: -10px; right: -10px; width: 40px; height: 40px; cursor: pointer; z-index: 10;">
 </a>
         <button class="button" onclick="restartGame()">Play Again</button>
     </div>
@@ -197,6 +197,7 @@ class Player {
     let isPrImage1 = Math.random() < 0.5;
     document.getElementById("gameOverImage").src = isPrImage1 ? "pr_image1.png" : "pr_image2.png";
     document.getElementById("gameOverLink").href = isPrImage1 ? "https://shop.47markets.org/" : "https://www.instagram.com/47markets/";
+    document.getElementById("gameOverLink").setAttribute("target", "_blank");
     document.getElementById("gameOverLink").setAttribute("target", "_blank");
     if (isPrImage1) {
         document.getElementById("gameOverLink").setAttribute("target", "_blank");
