@@ -87,12 +87,12 @@
         }
 
         function setup() {
-    // createCanvas を setup() で一度だけ実行
+    createCanvas(window.innerWidth * 0.9, window.innerHeight);
     player = new Player();
     onigiri = new Item(random(width), 0, '🍙', 5);
     teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
     sakeList = [];
-    
+    noLoop();
     window.startGame = startGame;
     
     player = new Player();
@@ -103,7 +103,10 @@
 function startGame() {
     document.getElementById("bgm").play();
     document.getElementById("startScreen").classList.add("hidden");
-    gameStarted = true; gameOver = false; score = 0; teaSpeed = 5;
+    gameStarted = true;
+    gameOver = false;
+    score = 0;
+    teaSpeed = 5;
     teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
     sakeList = [];
     loop();
