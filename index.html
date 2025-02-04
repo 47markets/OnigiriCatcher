@@ -92,7 +92,7 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
 <body>
     <div id="startScreen" class="screen" style="background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);">
         
-        <h3 style="margin-bottom: 10px; color: #555;">４７市 presents</h3>
+        <h3 style="margin-bottom: 10px; color: #555;">４７市 -ヨンナナイチ- presents</h3>
         <h1>Onigiri Catcher</h1>
         <p>おにぎりをキャッチして<br>お茶を避けろ！</p>
         <button class="button" onclick="startGame()">Game Start</button>
@@ -119,6 +119,42 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
     <div id="gameContainer"></div>
     <script>
         let player, onigiri;
+let sakeList = []; // 🍶リストを追加
+
+class Sake {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.speedX = random([-2, 2]); // ランダムに左右移動
+        this.speedY = 5; // 常に下降
+        this.symbol = '🍶';
+    }
+
+    fall() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        // 画面端でバウンド
+        if (this.x < 0 || this.x > width - 30) {
+            this.speedX *= -1;
+        }
+
+        // 画面外に出たらリセット
+        if (this.y > height) {
+            this.reset();
+        }
+    }
+
+    reset() {
+        this.x = random(0, width - 30);
+        this.y = 0;
+    }
+
+    show() {
+        textSize(30);
+        text(this.symbol, this.x, this.y);
+    }
+}
 
 class Item {
     constructor(x, y, symbol, speed) {
@@ -203,6 +239,25 @@ class Player {
         }
 
         function draw() {
+    background(220);
+    if (gameStarted && !gameOver) {
+        player.show();
+        player.move();
+        onigiri.fall();
+        onigiri.show();
+
+        teaList.forEach(tea => tea.fall());
+        teaList.forEach(tea => tea.show());
+
+        sakeList.forEach(sake => sake.fall()); // 🍶 を落下
+        sakeList.forEach(sake => sake.show()); // 🍶 を描画
+
+        checkCollision();
+        fill(0);
+        textSize(20);
+        text(`Score: ${score}`, 20, 30);
+    }
+}
             background(220);
             if (gameStarted && !gameOver) {
                 player.show();
@@ -219,6 +274,26 @@ class Player {
         }
 
         function checkCollision() {
+    if (!gameStarted) return;
+
+    if (onigiri.x > player.x - 15 && onigiri.x < player.x + 15 && onigiri.y > height - 50) {
+        score++;
+        if (score % 10 === 0) {
+            sakeList.push(new Sake(random(width), 0)); // 🍶 を追加
+        }
+        onigiri.reset();
+    }
+
+    // 🍵 の当たり判定（既存）
+    if (teaList.some(tea => tea.x > player.x - 15 && tea.x < player.x + 15 && tea.y > height - 50)) {
+        triggerGameOver();
+    }
+
+    // 🍶 の当たり判定（新規）
+    if (sakeList.some(sake => rectCollision(player.x, height - 50, 30, sake.x, sake.y, 30))) {
+        triggerGameOver();
+    }
+}
             if (!gameStarted) return;
             if (onigiri.x > player.x - 15 && onigiri.x < player.x + 15 && onigiri.y > height - 50) {
                 score++;
@@ -272,7 +347,16 @@ document.getElementById("gameOverImage").src = isPrImage1 ? "pr_image1.png" : "p
             }
         }
 
-        function restartGame() {
+        function rectCollision(px, py, pSize, sx, sy, sSize) {
+    return (
+        px < sx + sSize &&
+        px + pSize > sx &&
+        py < sy + sSize &&
+        py + pSize > sy
+    );
+}
+
+function restartGame() {
             startGame();
         }
     </script>
