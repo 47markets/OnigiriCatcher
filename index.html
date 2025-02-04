@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Onigiri Catcher</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js">document.getElementById("batsuImage").addEventListener("click", function(event) {
+    event.preventDefault(); // クリックのデフォルト動作を防ぐ
+    document.getElementById("gameOverImage").style.display = "none";
+    document.getElementById("batsuImage").style.display = "none";
+});
+</script>
     <style>
         body {
             position: relative;
@@ -62,7 +67,7 @@
 </head>
 <body>
     <div id="startScreen" class="screen">
-        <h3 style="margin-bottom: 10px; color: #555;">47市-ヨンナナイチ- presents</h3>
+        <h3 style="margin-bottom: 10px; color: #555;">47市 presents</h3>
         <h1>Onigiri Catcher</h1>
         <p>おにぎりをキャッチして<br>お茶を避けろ！</p>
         <button class="button" onclick="startGame()">Game Start</button>
@@ -75,93 +80,140 @@
         <p>Score: <span id="finalScore">0</span></p>
         <p>High Score: <span id="highScore">0</span></p>
         <a id="gameOverLink" href="https://shop.47markets.org/" target="_blank" style="position: relative; display: inline-block;">
-            <img id="gameOverImage" src="pr_image1.png" alt="Game Over Image" style="width: 90%; max-width: 400px; height: auto; margin-top: 10px;">
-            <img id="batsuImage" src="batsu.png" alt="Close Button" style="position: absolute; top: -10px; right: -10px; width: 40px; height: 40px; cursor: pointer; z-index: 10;">
-        </a>
+    <img id="gameOverImage" src="pr_image1.png" alt="Game Over Image" style="width: 90%; max-width: 400px; height: auto; margin-top: 10px;">
+    <img id="batsuImage" src="batsu.png" alt="Close Button" style="position: absolute; top: -10px; right: -10px; width: 40px; height: 40px; cursor: pointer; z-index: 10;">
+</a>
         <button class="button" onclick="restartGame()">Play Again</button>
     </div>
     <div id="gameContainer"></div>
     <script>
-        let player, onigiri, teaList = [], teaSpeed = 5, score = 0, highScore = localStorage.getItem("highScore") || 0, gameStarted = false, gameOver = false, bgm;
+        let player, onigiri;
 
-        class Item {
-            constructor(x, y, symbol, speed) {
-                this.x = x;
-                this.y = y;
-                this.symbol = symbol;
-                this.speed = speed;
-            }
-            fall() {
-                this.y += this.speed;
-                if (this.y > height) this.reset();
-            }
-            reset() {
-                this.x = random(width);
-                this.y = 0;
-            }
-            show() {
-                textSize(35);
-                text(this.symbol, this.x, this.y);
-            }
+class Item {
+    constructor(x, y, symbol, speed) {
+        this.x = x;
+        this.y = y;
+        this.symbol = symbol;
+        this.speed = speed;
+    }
+    fall() {
+        this.y += this.speed;
+        if (this.y > height) {
+            this.reset();
         }
+    }
+    reset() {
+        this.x = random(width);
+        this.y = 0;
+    }
+    show() {
+        textSize(35);
+        text(this.symbol, this.x, this.y);
+    }
+}
 
-        class Player {
-            constructor() {
-                this.x = width / 2;
-                this.symbol = '🚛';
-            }
-            move() {
-                this.x = constrain(mouseX, 0, width);
-            }
-            show() {
-                textSize(50);
-                text(this.symbol, this.x, height - 50);
-            }
-        }
+class Player {
+    constructor() {
+        console.log("Player initialized");
+        this.x = width / 2;
+        this.symbol = '🚛';
+    }
+    move() {
+        this.x = constrain(mouseX, 0, width);
+    }
+    show() {
+        textSize(50);
+        text(this.symbol, this.x, height - 50);
+    }
+}
+        let teaSpeed = 5;
+        let teaList = [];
+        let score = 0;
+        let highScore = localStorage.getItem("highScore") || 0;
+        let gameStarted = false;
+        let gameOver = false;
+        let bgm;
 
         function setup() {
-            let canvas = createCanvas(window.innerWidth * 0.9, window.innerHeight);
+    console.log("Setup started");
+            let canvasHeight = window.innerHeight;
+            let canvas = createCanvas(window.innerWidth * 0.9, canvasHeight);
             canvas.parent("gameContainer");
             bgm = document.getElementById("bgm");
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
-            noLoop();
+            console.log("Setup complete, noLoop() called");
+    noLoop();
         }
 
         function startGame() {
+    console.log("Game started");
             document.getElementById("startScreen").classList.add("hidden");
+    document.getElementById("gameOverScreen").classList.add("hidden");
             document.getElementById("gameOverScreen").classList.add("hidden");
-            gameStarted = true; gameOver = false; score = 0; teaSpeed = 5;
+            gameStarted = true;
+            gameOver = false;
+            score = 0;
+            teaSpeed = 5;
             teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
             onigiri.reset();
             player.x = width / 2;
-            bgm.volume = 0.5; bgm.play();
-            loop();
+            bgm.volume = 0.5;
+            bgm.play();
+            console.log("Loop started");
+    console.log("Loop started");
+    loop();
         }
 
         function draw() {
             background(220);
             if (gameStarted && !gameOver) {
-                player.show(); player.move();
-                onigiri.fall(); onigiri.show();
-                teaList.forEach(tea => { tea.fall(); tea.show(); });
+                player.show();
+                player.move();
+                onigiri.fall();
+                onigiri.show();
+                teaList.forEach(tea => tea.fall());
+                teaList.forEach(tea => tea.show());
                 checkCollision();
-                fill(0); textSize(20); text(`Score: ${score}`, 20, 30);
+                fill(0);
+                textSize(20);
+                text(`Score: ${score}`, 20, 30);
             }
         }
 
         function checkCollision() {
-            let playerRadius = 25;
             if (!gameStarted) return;
-            if (onigiri.y >= height - 50 && onigiri.x >= player.x - playerRadius && onigiri.x <= player.x + playerRadius) {
+            if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
                 score++;
-                if (score % 5 === 0) teaList.push(new Item(random(width), 0, '🍵', teaSpeed));
-                teaSpeed += 0.1; teaList.forEach(tea => tea.speed = teaSpeed);
+                if (score % 5 === 0) {
+                    teaList.push(new Item(random(width), 0, '🍵', teaSpeed));
+                }
+                teaSpeed += 0.1;
+                teaList.forEach(tea => tea.speed = teaSpeed);
                 onigiri.reset();
+            }
+            if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30)) {
+                gameOver = true;
+                document.getElementById("gameOverScreen").classList.remove("hidden");
+    let isPrImage1 = Math.random() < 0.5;
+    document.getElementById("gameOverImage").src = isPrImage1 ? "pr_image1.png" : "pr_image2.png";
+    document.getElementById("gameOverLink").href = isPrImage1 ? "https://shop.47markets.org/" : "https://www.instagram.com/47markets/";
+    document.getElementById("gameOverLink").setAttribute("target", "_blank");
+    document.getElementById("gameOverLink").setAttribute("target", "_blank");
+    
+                document.getElementById("finalScore").textContent = score;
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem("highScore", highScore);
+                }
+                document.getElementById("highScore").textContent = highScore;
+                noLoop();
             }
         }
 
-        function restartGame() { startGame(); }
+        function restartGame() {
+            startGame();
+        }
     </script>
 </body>
 </html>
