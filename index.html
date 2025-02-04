@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -43,7 +43,7 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
         .screen {
             width: 80%;
             max-width: 350px;
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); /* おしゃれなグラデーション背景 */
+            background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%); /* おしゃれなグラデーション背景 */
             position: absolute;
             top: 50%;
             left: 50%;
@@ -103,8 +103,10 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
     </audio>
     <div id="gameOverScreen" class="screen hidden">
         <h2>Game Over!</h2>
-        <p>Score: <span id="finalScore">0</span></p>
-        <p>High Score: <span id="highScore">0</span></p>
+        <div id="scoreContainer" style="display: flex; justify-content: center; gap: 20px;">
+    <p>Score: <span id="finalScore">0</span></p>
+    <p>High Score: <span id="highScore">0</span></p>
+</div>
         <a id="gameOverLink" href="https://shop.47markets.org/" target="_blank" style="position: relative; display: flex; justify-content: center; width: 100%;">
     <img id="gameOverImage" src="pr_image1.png" alt="Game Over Image" style="width: 90%; max-width: 400px; height: auto; margin-top: 10px; display: block; margin: 0 auto;">
     
