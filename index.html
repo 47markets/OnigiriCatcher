@@ -24,7 +24,7 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
             overflow: hidden;
             margin: 0;
             touch-action: none;
-        }
+        // }
         #gameContainer {
             width: 100%;
             height: 100%;
@@ -280,7 +280,7 @@ loop();
       //  }
 
         function checkCollision() {
-    if (!gameStarted) 
+    if (!gameStarted) return;
 
     if (onigiri.x > player.x - 15 && onigiri.x < player.x + 15 && onigiri.y > height - 50) {
         score++;
