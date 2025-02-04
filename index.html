@@ -89,6 +89,7 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
 </head>
 <body>
     <div id="startScreen" class="screen">
+        <p style="font-size: 14px; color: #777;">※ Safari、Chrome推奨</p>
         <h3 style="margin-bottom: 10px; color: #555;">47市 presents</h3>
         <h1>Onigiri Catcher</h1>
         <p>おにぎりをキャッチして<br>お茶を避けろ！</p>
@@ -128,7 +129,7 @@ class Item {
         }
     }
     reset() {
-        this.x = random(width);
+        this.x = random(0, width - 30);
         this.y = 0;
     }
     show() {
@@ -144,7 +145,7 @@ class Player {
         this.symbol = '🚛';
     }
     move() {
-        this.x = constrain(mouseX, 0, width);
+        this.x = constrain(mouseX, 0, width - 50);
     }
     show() {
         textSize(50);
