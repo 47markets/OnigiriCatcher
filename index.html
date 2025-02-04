@@ -89,6 +89,8 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
 </a>
         <p id="countdownTimer">3</p>
 <button id="playAgainButton" class="button hidden" onclick="restartGame()">Play Again</button>
+<button id="instagramButton" class="button hidden" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">47市</button>
+<button id="giftButton" class="button hidden" onclick="window.open('https://shop.47markets.org/', '_blank')">47市ギフト</button>
     </div>
     <div id="gameContainer"></div>
     <script>
@@ -152,6 +154,10 @@ class Player {
         }
 
         function startGame() {
+    document.getElementById("gameOverImage").style.display = "block";
+    document.getElementById("playAgainButton").classList.add("hidden");
+    document.getElementById("instagramButton").classList.add("hidden");
+    document.getElementById("giftButton").classList.add("hidden");
     console.log("Game started");
             document.getElementById("startScreen").classList.add("hidden");
     document.getElementById("gameOverScreen").classList.add("hidden");
@@ -218,9 +224,13 @@ class Player {
     document.getElementById("gameOverImage").style.display = "none";
     document.getElementById("countdownTimer").style.display = "none";
     document.getElementById("playAgainButton").classList.remove("hidden");
+    document.getElementById("instagramButton").classList.remove("hidden");
+    document.getElementById("giftButton").classList.remove("hidden");
+    document.getElementById("playAgainButton").classList.remove("hidden");
 }, 4000);
     let isPrImage1 = Math.random() < 0.5;
-    document.getElementById("gameOverImage").src = isPrImage1 ? "pr_image1.png" : "pr_image2.png";
+    document.getElementById("gameOverImage").style.display = "block";
+document.getElementById("gameOverImage").src = isPrImage1 ? "pr_image1.png" : "pr_image2.png";
     document.getElementById("gameOverLink").href = isPrImage1 ? "https://shop.47markets.org/" : "https://www.instagram.com/47markets/";
     document.getElementById("gameOverLink").setAttribute("target", "_blank");
     document.getElementById("gameOverLink").setAttribute("target", "_blank");
