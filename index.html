@@ -54,114 +54,12 @@
             <p>Score: <span id="finalScore">0</span></p>
             <p>High Score: <span id="highScore">0</span></p>
         </div>
-        <img id="gameOverImage" onclick="window.open(Math.random() < 0.5 ? 'https://shop.47markets.org/' : 'https://www.instagram.com/47markets/', '_blank')" style="width: 600px; height: 500px; display: block; margin: 0 auto;">
+        <img id="gameOverImage" style="width: 80%; max-width: 600px; height: auto; display: block; margin: 0 auto;">
         <p id="countdownTimer">4</p>
         <button class="button hidden" id="playAgainButton" onclick="restartGame()">Play Again</button>
         <button class="button hidden" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">４７市</button>
         <button class="button hidden" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
     </div>
-    <script>
-        let player, onigiri, teaList = [], sakeList = [], score = 0, highScore = localStorage.getItem("highScore") || 0;
-        let gameStarted = false, gameOver = false, teaSpeed = 5;
-        
-        class Item {
-            constructor(x, y, symbol, speed) { this.x = x; this.y = y; this.symbol = symbol; this.speed = speed; }
-            fall() { this.y += this.speed; if (this.y > height) this.reset(); }
-            reset() { this.x = random(30, width - 30); this.y = 0; }
-            show() { textSize(30); text(this.symbol, this.x, this.y); }
-        }
-
-        class Sake extends Item {
-            constructor(x, y) { super(x, y, '🍶', 5); this.speedX = random([-2, 2]); }
-            fall() { super.fall(); this.x += this.speedX; if (this.x < 0 || this.x > width - 30) this.speedX *= -1; }
-        }
-
-        class Player {
-            constructor() { this.x = width / 2; this.symbol = '🚛'; }
-            move() { this.x = constrain(mouseX, 0, width - 30); }
-            show() { textSize(30); text(this.symbol, this.x, height - 50); }
-        }
-
-        function setup() {
-            createCanvas(window.innerWidth * 0.9, window.innerHeight);
-            player = new Player();
-            onigiri = new Item(random(width), 0, '🍙', 5);
-            noLoop();
-        }
-
-        function startGame() {
-            document.getElementById("startScreen").classList.add("hidden");
-            gameStarted = true; gameOver = false; score = 0; teaSpeed = 5;
-            teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
-            sakeList = [];
-            loop();
-        }
-
-        function draw() {
-            background(220);
-            if (gameStarted && !gameOver) {
-                player.show(); player.move();
-                onigiri.fall(); onigiri.show();
-                teaList.forEach(tea => { tea.fall(); tea.show(); });
-                sakeList.forEach(sake => { sake.fall(); sake.show(); });
-                checkCollision();
-                textSize(20); fill(0); text(`Score: ${score}`, 20, 30);
-            }
-        }
-
-        function checkCollision() {
-    if (!gameStarted) return;
-    
-    if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
-        score++;
-        teaSpeed += 0.1;
-        if (score % 5 === 0) {
-            teaList.push(new Item(random(width), 0, '🍵', teaSpeed));
-        }
-        onigiri.reset();
-    }
-    
-    if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30) || sakeList.some(sake => dist(player.x, height - 50, sake.x, sake.y) < 30)) {
-        triggerGameOver();
-    }
-            if (!gameStarted) return;
-            if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) { score++; onigiri.reset(); if (score % 10 === 0) sakeList.push(new Sake(random(width), 0)); }
-            if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30) || sakeList.some(sake => dist(player.x, height - 50, sake.x, sake.y) < 30)) triggerGameOver();
-        }
-
-        function triggerGameOver() {
-    gameOver = true;
-    document.getElementById("gameOverScreen").classList.remove("hidden");
-    document.getElementById("finalScore").textContent = score;
-    if (score > highScore) { highScore = score; localStorage.setItem("highScore", highScore); }
-    document.getElementById("highScore").textContent = highScore;
-    
-    // ゲームオーバー画像を 4 秒間表示
-    document.getElementById("gameOverImage").style.display = "block";
-    let countdown = 4;
-    document.getElementById("countdownTimer").textContent = `あと ${countdown} 秒で再挑戦できます`;
-    
-    let countdownInterval = setInterval(() => {
-        countdown--;
-        document.getElementById("countdownTimer").textContent = `あと ${countdown} 秒で再挑戦できます`;
-        if (countdown === 0) {
-            clearInterval(countdownInterval);
-            document.getElementById("gameOverImage").style.display = "none";
-            document.getElementById("countdownTimer").style.display = "none";
-            document.getElementById("playAgainButton").classList.remove("hidden");
-            document.getElementById("gameOverScreen").classList.add("show-buttons");
-        }
-    }, 1000);
-    noLoop();
-            gameOver = true;
-            document.getElementById("gameOverScreen").classList.remove("hidden");
-            document.getElementById("finalScore").textContent = score;
-            if (score > highScore) { highScore = score; localStorage.setItem("highScore", highScore); }
-            document.getElementById("highScore").textContent = highScore;
-            noLoop();
-        }
-
-        function restartGame() { document.getElementById("gameOverScreen").classList.add("hidden"); startGame(); }
-    </script>
-</body>
-</html>
+    <audio id="bgm" loop>
+    <source src="bgm.mp3" type="audio/mpeg">
+</audio>
