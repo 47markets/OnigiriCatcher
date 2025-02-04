@@ -67,7 +67,25 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
         .button:hover {
             background-color: #ddd;
         }
-    </style>
+    #gameOverScreen {
+    min-height: 150px; /* 画像が消えても空白が残らないように調整 */
+    transition: all 0.5s ease-in-out;
+}
+
+#gameOverButtons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.button {
+    width: 80%;
+    max-width: 250px;
+}
+
+</style>
 </head>
 <body>
     <div id="startScreen" class="screen">
@@ -83,8 +101,8 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
         <h2>Game Over!</h2>
         <p>Score: <span id="finalScore">0</span></p>
         <p>High Score: <span id="highScore">0</span></p>
-        <a id="gameOverLink" href="https://shop.47markets.org/" target="_blank" style="position: relative; display: inline-block;">
-    <img id="gameOverImage" src="pr_image1.png" alt="Game Over Image" style="width: 90%; max-width: 400px; height: auto; margin-top: 10px;">
+        <a id="gameOverLink" href="https://shop.47markets.org/" target="_blank" style="position: relative; display: flex; justify-content: center; width: 100%;">
+    <img id="gameOverImage" src="pr_image1.png" alt="Game Over Image" style="width: 90%; max-width: 400px; height: auto; margin-top: 10px; display: block; margin: 0 auto;">
     
 </a>
         <p id="countdownTimer">3</p>
@@ -222,6 +240,7 @@ class Player {
     }, 1000);
                 setTimeout(() => {
     document.getElementById("gameOverImage").style.display = "none";
+    document.getElementById("gameOverScreen").style.minHeight = "auto";
     document.getElementById("countdownTimer").style.display = "none";
     document.getElementById("playAgainButton").classList.remove("hidden");
     document.getElementById("instagramButton").classList.remove("hidden");
