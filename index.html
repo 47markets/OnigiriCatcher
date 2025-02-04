@@ -182,8 +182,10 @@ class Player {
         }
 
         function checkCollision() {
+    let playerWidth = 50; // 🚛のサイズを考慮
+    let playerRadius = playerWidth / 2;
             if (!gameStarted) return;
-            if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
+            if (onigiri.y >= height - 50 && onigiri.x >= player.x - playerRadius && onigiri.x <= player.x + playerRadius) {
                 score++;
                 if (score % 5 === 0) {
                     teaList.push(new Item(random(width), 0, '🍵', teaSpeed));
@@ -192,7 +194,7 @@ class Player {
                 teaList.forEach(tea => tea.speed = teaSpeed);
                 onigiri.reset();
             }
-            if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30)) {
+            if (teaList.some(tea => tea.y >= height - 50 && tea.x >= player.x - playerRadius && tea.x <= player.x + playerRadius)) {
                 gameOver = true;
                 document.getElementById("gameOverScreen").classList.remove("hidden");
     let isPrImage1 = Math.random() < 0.5;
