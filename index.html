@@ -94,7 +94,7 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
         
         <h3 style="margin-bottom: 10px; color: #555;">４７市 -ヨンナナイチ- presents</h3>
         <h1>Onigiri Catcher</h1>
-        <p>おにぎりをキャッチして<br>お茶を避けろ！</p>
+        <p>おにぎりをキャッチして<br>飲み物を避けろ！</p>
         <button class="button" onclick="startGame()">Game Start</button>
         <p style="font-size: 14px; color: #777; margin-top: 10px;">※ Safari、Chrome推奨</p>
     </div>
@@ -214,6 +214,7 @@ class Player {
         }
 
         function startGame() {
+    console.log("StartGame function called");
     document.getElementById("countdownTimer").style.display = "block";
     document.getElementById("countdownTimer").textContent = `あと 4 秒で再挑戦できます`;
     document.getElementById("gameOverImage").style.display = "block";
@@ -222,7 +223,11 @@ class Player {
     document.getElementById("giftButton").classList.add("hidden");
     console.log("Game started");
             document.getElementById("startScreen").classList.add("hidden");
+gameStarted = true;
+gameOver = false;
     document.getElementById("gameOverScreen").classList.add("hidden");
+sakeList = []; // 🍶リストの初期化
+sakeList.push(new Sake(random(width), 0));
             document.getElementById("gameOverScreen").classList.add("hidden");
             gameStarted = true;
             gameOver = false;
@@ -234,6 +239,7 @@ class Player {
             bgm.volume = 0.5;
             bgm.play();
             console.log("Loop started");
+loop();
     console.log("Loop started");
     loop();
         }
