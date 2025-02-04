@@ -172,6 +172,8 @@ class Player {
         }
 
         function startGame() {
+    document.getElementById("countdownTimer").style.display = "block";
+    document.getElementById("countdownTimer").textContent = `あと 4 秒で再挑戦できます`;
     document.getElementById("gameOverImage").style.display = "block";
     document.getElementById("playAgainButton").classList.add("hidden");
     document.getElementById("instagramButton").classList.add("hidden");
@@ -225,10 +227,10 @@ class Player {
                 gameOver = true;
                 document.getElementById("gameOverScreen").classList.remove("hidden");
     let countdown = 4;
-    document.getElementById("countdownTimer").textContent = countdown;
+    document.getElementById("countdownTimer").textContent = `あと ${countdown} 秒で再挑戦できます`;
     let countdownInterval = setInterval(() => {
         countdown--;
-        document.getElementById("countdownTimer").textContent = countdown;
+        document.getElementById("countdownTimer").textContent = `あと ${countdown} 秒で再挑戦できます`;
         if (countdown === 0) {
             clearInterval(countdownInterval);
             document.getElementById("gameOverImage").style.display = "none";
