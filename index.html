@@ -86,9 +86,20 @@
         }
 
         function setup() {
-    window.startGame = startGame;
+    createCanvas(window.innerWidth * 0.9, window.innerHeight);
+    player = new Player();
+    onigiri = new Item(random(width), 0, '🍙', 5);
+    noLoop();
+    
     window.startGame = startGame;
 function startGame() {
+    document.getElementById("bgm").play();
+    document.getElementById("startScreen").classList.add("hidden");
+    createCanvas(window.innerWidth * 0.9, window.innerHeight);
+    gameStarted = true; gameOver = false; score = 0; teaSpeed = 5;
+    teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
+    sakeList = [];
+    loop();
     document.getElementById("bgm").play();
             createCanvas(window.innerWidth * 0.9, window.innerHeight);
             player = new Player();
