@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -24,7 +24,7 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
             overflow: hidden;
             margin: 0;
             touch-action: none;
-        // }
+        }
         #gameContainer {
             width: 100%;
             height: 100%;
@@ -43,7 +43,7 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
         .screen {
             width: 80%;
             max-width: 350px;
-            background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%); /* おしゃれなグラデーション背景 */
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); /* おしゃれなグラデーション背景 */
             position: absolute;
             top: 50%;
             left: 50%;
@@ -69,7 +69,7 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
             background-color: #ddd;
         }
     #gameOverScreen {
-    background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
     padding: 15px 20px;
     transition: all 0.5s ease-in-out;
 }
@@ -90,11 +90,11 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
 </style>
 </head>
 <body>
-    <div id="startScreen" class="screen" style="background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);">
+    <div id="startScreen" class="screen" style="background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);">
         
-        <h3 style="margin-bottom: 10px; color: #555;">４７市 -ヨンナナイチ- presents</h3>
+        <h3 style="margin-bottom: 10px; color: #555;">４７市 presents</h3>
         <h1>Onigiri Catcher</h1>
-        <p>おにぎりをキャッチして<br>飲み物を避けろ！</p>
+        <p>おにぎりをキャッチして<br>お茶を避けろ！</p>
         <button class="button" onclick="startGame()">Game Start</button>
         <p style="font-size: 14px; color: #777; margin-top: 10px;">※ Safari、Chrome推奨</p>
     </div>
@@ -103,10 +103,8 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
     </audio>
     <div id="gameOverScreen" class="screen hidden">
         <h2>Game Over!</h2>
-        <div id="scoreContainer" style="display: flex; justify-content: center; gap: 20px; align-items: flex-start;">
-    <p>Score: <span id="finalScore">0</span></p>
-    <p>High Score: <span id="highScore">0</span></p>
-</div>
+        <p>Score: <span id="finalScore">0</span></p>
+        <p>High Score: <span id="highScore">0</span></p>
         <a id="gameOverLink" href="https://shop.47markets.org/" target="_blank" style="position: relative; display: flex; justify-content: center; width: 100%;">
     <img id="gameOverImage" src="pr_image1.png" alt="Game Over Image" style="width: 90%; max-width: 400px; height: auto; margin-top: 10px; display: block; margin: 0 auto;">
     
@@ -119,42 +117,6 @@ document.getElementById("batsuImage").addEventListener("click", function(event) 
     <div id="gameContainer"></div>
     <script>
         let player, onigiri;
-let sakeList = []; // 🍶リストを追加
-
-class Sake {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.speedX = random([-2, 2]); // ランダムに左右移動
-        this.speedY = 5; // 常に下降
-        this.symbol = '🍶';
-    }
-
-    fall() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-
-        // 画面端でバウンド
-        if (this.x < 0 || this.x > width - 30) {
-            this.speedX *= -1;
-        }
-
-        // 画面外に出たらリセット
-        if (this.y > height) {
-            this.reset();
-        }
-    }
-
-    reset() {
-        this.x = random(0, width - 30);
-        this.y = 0;
-    }
-
-    show() {
-        textSize(30);
-        text(this.symbol, this.x, this.y);
-    }
-}
 
 class Item {
     constructor(x, y, symbol, speed) {
@@ -186,7 +148,7 @@ class Player {
         this.symbol = '🚛';
     }
     move() {
-        this.x = constrain(mouseX, 0, width - 30);
+        this.x = constrain(mouseX, 0, width - 40);
     }
     show() {
         textSize(30);
@@ -214,7 +176,6 @@ class Player {
         }
 
         function startGame() {
-    console.log("StartGame function called");
     document.getElementById("countdownTimer").style.display = "block";
     document.getElementById("countdownTimer").textContent = `あと 4 秒で再挑戦できます`;
     document.getElementById("gameOverImage").style.display = "block";
@@ -223,11 +184,7 @@ class Player {
     document.getElementById("giftButton").classList.add("hidden");
     console.log("Game started");
             document.getElementById("startScreen").classList.add("hidden");
-gameStarted = true;
-gameOver = false;
     document.getElementById("gameOverScreen").classList.add("hidden");
-sakeList = []; // 🍶リストの初期化
-sakeList.push(new Sake(random(width), 0));
             document.getElementById("gameOverScreen").classList.add("hidden");
             gameStarted = true;
             gameOver = false;
@@ -239,31 +196,11 @@ sakeList.push(new Sake(random(width), 0));
             bgm.volume = 0.5;
             bgm.play();
             console.log("Loop started");
-loop();
     console.log("Loop started");
     loop();
         }
 
         function draw() {
-    background(220);
-    if (gameStarted && !gameOver) {
-        player.show();
-        player.move();
-        onigiri.fall();
-        onigiri.show();
-
-        teaList.forEach(tea => tea.fall());
-        teaList.forEach(tea => tea.show());
-
-        sakeList.forEach(sake => sake.fall()); // 🍶 を落下
-        sakeList.forEach(sake => sake.show()); // 🍶 を描画
-
-        checkCollision();
-        fill(0);
-        textSize(20);
-        text(`Score: ${score}`, 20, 30);
-    }
-}
             background(220);
             if (gameStarted && !gameOver) {
                 player.show();
@@ -277,29 +214,9 @@ loop();
                 textSize(20);
                 text(`Score: ${score}`, 20, 30);
             }
-      //  }
+        }
 
         function checkCollision() {
-    if (!gameStarted) return;
-
-    if (onigiri.x > player.x - 15 && onigiri.x < player.x + 15 && onigiri.y > height - 50) {
-        score++;
-        if (score % 10 === 0) {
-            sakeList.push(new Sake(random(width), 0)); // 🍶 を追加
-        }
-        onigiri.reset();
-    }
-
-    // 🍵 の当たり判定（既存）
-    if (teaList.some(tea => tea.x > player.x - 15 && tea.x < player.x + 15 && tea.y > height - 50)) {
-        triggerGameOver();
-    }
-
-    // 🍶 の当たり判定（新規）
-    if (sakeList.some(sake => rectCollision(player.x, height - 50, 30, sake.x, sake.y, 30))) {
-        triggerGameOver();
-    }
-}
             if (!gameStarted) return;
             if (onigiri.x > player.x - 15 && onigiri.x < player.x + 15 && onigiri.y > height - 50) {
                 score++;
@@ -353,16 +270,7 @@ document.getElementById("gameOverImage").src = isPrImage1 ? "pr_image1.png" : "p
             }
         }
 
-        function rectCollision(px, py, pSize, sx, sy, sSize) {
-    return (
-        px < sx + sSize &&
-        px + pSize > sx &&
-        py < sy + sSize &&
-        py + pSize > sy
-    );
-}
-
-function restartGame() {
+        function restartGame() {
             startGame();
         }
     </script>
