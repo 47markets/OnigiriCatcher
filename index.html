@@ -7,8 +7,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <style>
         body {
-    overscroll-behavior: contain;
-    touch-action: none;
+            touch-action: none;
+            overscroll-behavior: contain;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -44,16 +44,15 @@
     <div id="startScreen" class="screen">
         <h3>４７市 -ヨンナナイチ- presents</h3>
         <h1>Onigiri Catcher</h1>
-        <p>おにぎりをキャッチして<br>飲み物を避けろ！</p>
+        <p>おにぎりをキャッチして 飲み物を避けろ！</p>
         <button class="button" onclick="startGame()">Game Start</button>
         <p style="font-size: 14px; color: #777;">※ Safari、Chrome推奨</p>
     </div>
+    <div id="gameContainer"></div>
     <div id="gameOverScreen" class="screen hidden">
         <h2>Game Over!</h2>
-        <div style="display: flex; justify-content: center; gap: 20px;">
-            <p>Score: <span id="finalScore">0</span></p>
-            <p>High Score: <span id="highScore">0</span></p>
-        </div>
+        <p>Score: <span id="finalScore">0</span></p>
+        <p>High Score: <span id="highScore">0</span></p>
         <img id="gameOverImage" style="width: 80%; max-width: 600px; height: auto; display: block; margin: 0 auto;">
         <p id="countdownTimer">4</p>
         <button class="button hidden" id="playAgainButton" onclick="restartGame()">Play Again</button>
@@ -61,9 +60,9 @@
         <button class="button hidden" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
     </div>
     <audio id="bgm" loop>
-    <source src="bgm.mp3" type="audio/mpeg">
-</audio>
-<script>
+        <source src="bgm.mp3" type="audio/mpeg">
+    </audio>
+    <script>
         let player, onigiri, teaList = [], sakeList = [], score = 0, highScore = localStorage.getItem("highScore") || 0;
         let gameStarted = false, gameOver = false, teaSpeed = 5;
         
@@ -74,31 +73,30 @@
             show() { textSize(30); text(this.symbol, this.x, this.y); }
         }
 
-        class Sake extends Item {
-            constructor(x, y) { super(x, y, '🍶', 5); this.speedX = random([-2, 2]); }
-            fall() { super.fall(); this.x += this.speedX; if (this.x < 0 || this.x > width - 30) this.speedX *= -1; }
-        }
-
         class Player {
             constructor() { this.x = width / 2; this.symbol = '🚛'; }
-            move() { this.x = constrain(mouseX, 0, width - 30); }
+            move() { this.x = constrain(mouseX || (touches[0]?.x || 0), 0, width - 30); }
             show() { textSize(30); text(this.symbol, this.x, height - 50); }
         }
 
         function setup() {
-    window.startGame = startGame;
-            createCanvas(window.innerWidth * 0.9, window.innerHeight);
+            let canvas = createCanvas(window.innerWidth * 0.9, window.innerHeight * 0.9);
+            canvas.parent("gameContainer");
             player = new Player();
             onigiri = new Item(random(width), 0, '🍙', 5);
+            teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
+            sakeList = [];
             noLoop();
+            window.startGame = startGame;
         }
 
         function startGame() {
-    document.getElementById("bgm").play();
+            document.getElementById("bgm").play();
             document.getElementById("startScreen").classList.add("hidden");
-            gameStarted = true; gameOver = false; score = 0; teaSpeed = 5;
-            teaList = [new Item(random(width), 0, '🍵', teaSpeed)];
-            sakeList = [];
+            gameStarted = true;
+            gameOver = false;
+            score = 0;
+            teaSpeed = 5;
             loop();
         }
 
@@ -112,109 +110,6 @@
                 checkCollision();
                 textSize(20); fill(0); text(`Score: ${score}`, 20, 30);
             }
-        }
-
-        function checkCollision() {
-    if (!gameStarted) return;
-    
-    if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) {
-        score++;
-        teaSpeed += 0.1;
-        if (score % 5 === 0) {
-            teaList.push(new Item(random(width), 0, '🍵', teaSpeed));
-        }
-        onigiri.reset();
-    }
-    
-    if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30) || sakeList.some(sake => dist(player.x, height - 50, sake.x, sake.y) < 30)) {
-        triggerGameOver();
-    }
-            if (!gameStarted) return;
-            if (dist(player.x, height - 50, onigiri.x, onigiri.y) < 30) { score++; onigiri.reset(); if (score % 10 === 0) {
-    console.log('🍶追加！');
-    sakeList.push(new Sake(random(width), 0));
-} }
-            if (teaList.some(tea => dist(player.x, height - 50, tea.x, tea.y) < 30) || sakeList.some(sake => dist(player.x, height - 50, sake.x, sake.y) < 30)) triggerGameOver();
-        }
-
-        function triggerGameOver() {
-    gameOver = true;
-    document.getElementById("gameOverScreen").classList.remove("hidden");
-    document.getElementById("finalScore").textContent = score;
-    if (score > highScore) { highScore = score; localStorage.setItem("highScore", highScore); }
-    document.getElementById("highScore").textContent = highScore;
-    
-    // ゲームオーバー画像を 4 秒間表示
-    let isPrImage1 = Math.random() < 0.5;
-let gameOverImage = document.getElementById("gameOverImage");
-gameOverImage.src = isPrImage1 ? "pr_image1.png" : "pr_image2.png";
-gameOverImage.onclick = function() {
-    window.open(isPrImage1 ? "https://shop.47markets.org/" : "https://www.instagram.com/47markets/", "_blank");
-};
-document.getElementById("gameOverImage").src = isPrImage1 ? "pr_image1.png" : "pr_image2.png";
-document.getElementById("gameOverImage").style.display = "block";
-    let countdown = 4;
-    document.getElementById("countdownTimer").textContent = `あと ${countdown} 秒で再挑戦できます`;
-    
-    let countdownInterval = setInterval(() => {
-        countdown--;
-        document.getElementById("countdownTimer").textContent = `あと ${countdown} 秒で再挑戦できます`;
-        if (countdown === 0) {
-    clearInterval(countdownInterval);
-    setTimeout(() => {
-    let playAgainButton = document.getElementById("playAgainButton");
-    let instagramButton = document.getElementById("instagramButton");
-    let giftButton = document.getElementById("giftButton");
-    let gameOverImage = document.getElementById("gameOverImage");
-    
-    if (gameOverImage) {
-        gameOverImage.style.display = "none";
-    }
-    
-    if (playAgainButton && instagramButton && giftButton) {
-    let playAgainButton = document.getElementById("playAgainButton");
-    let instagramButton = document.getElementById("instagramButton");
-    let giftButton = document.getElementById("giftButton");
-    
-    if (playAgainButton && instagramButton && giftButton) {
-    if (gameOverImage) {
-    gameOverImage.style.display = "none";
-}
-    document.getElementById("countdownTimer").style.display = "none";
-    document.getElementById("instagramButton").classList.remove("hidden");
-    document.getElementById("giftButton").classList.remove("hidden");
-            playAgainButton.classList.remove("hidden");
-        instagramButton.classList.remove("hidden");
-        giftButton.classList.remove("hidden");
-    }
-}, 500);
-    document.getElementById("countdownTimer").style.display = "none";
-    document.getElementById("instagramButton").classList.remove("hidden");
-    document.getElementById("giftButton").classList.remove("hidden");
-            playAgainButton.classList.remove("hidden");
-        instagramButton.classList.remove("hidden");
-        giftButton.classList.remove("hidden");
-    }
-    countdown = 4; // ２度目以降もカウントダウンをリセット
-    document.getElementById("playAgainButton").classList.remove("hidden");
-    document.getElementById("instagramButton").classList.remove("hidden");
-    document.getElementById("giftButton").classList.remove("hidden");
-            clearInterval(countdownInterval);
-            document.getElementById("instagramButton").classList.remove("hidden");
-            document.getElementById("giftButton").classList.remove("hidden");
-            document.getElementById("gameOverImage").style.display = "none";
-            document.getElementById("countdownTimer").style.display = "none";
-            document.getElementById("playAgainButton").classList.remove("hidden");
-            document.getElementById("gameOverScreen").classList.add("show-buttons");
-        }
-    }, 1000);
-    noLoop();
-            gameOver = true;
-            document.getElementById("gameOverScreen").classList.remove("hidden");
-            document.getElementById("finalScore").textContent = score;
-            if (score > highScore) { highScore = score; localStorage.setItem("highScore", highScore); }
-            document.getElementById("highScore").textContent = highScore;
-            noLoop();
         }
 
         function restartGame() { document.getElementById("gameOverScreen").classList.add("hidden"); startGame(); }
