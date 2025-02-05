@@ -2,38 +2,38 @@
 let gameState = "title";  // "title", "playing", "gameover"
 let score = 0;
 let highScore = 0;
-let currentTeaSpeed = 2;  // 初期の🍵落下速度。おにぎりキャッチごとに+0.1
-let teaThreshold = 5;     // 次に🍵追加するスコア閾値
-let sakeThreshold = 10;   // 次に🍶追加するスコア閾値
+let currentTeaSpeed = 2;   // 初期のお茶の落下速度
+let teaThreshold = 5;      // 次にお茶を追加するスコア閾値
+let sakeThreshold = 10;    // 次に酒を追加するスコア閾値
 
-let onigiriList = []; // 🍙 オブジェクトリスト
-let teaList = [];     // 🍵 オブジェクトリスト
-let sakeList = [];    // 🍶 オブジェクトリスト
+let onigiriList = [];  // 🍙 のオブジェクトリスト
+let teaList = [];      // 🍵 のオブジェクトリスト
+let sakeList = [];     // 🍶 のオブジェクトリスト
 
 let onigiriSpawnTimer = 0;
-const onigiriSpawnInterval = 60; // フレーム毎（約1秒間隔）
+const onigiriSpawnInterval = 90;  // spawn間隔を延長して🍙の量を減少
+const maxOnigiriCount = 3;         // 画面上の🍙の最大数
 
 // 各種定数
 const canvasWidth = 400;
 const canvasHeight = 600;
 const truckWidth = 80;
 const truckHeight = 40;
-const itemSize = 32;    // アイテム（絵文字）描画サイズ
-const onigiriSpeed = 3; // 🍙 の落下速度
-const baseTeaSpeed = 2; // 🍵 の基本落下速度（以降 currentTeaSpeed により上昇）
-const sakeSpeed = 3;    // 🍶 の基礎速度（角度で計算）
+const itemSize = 32;     // アイテム（絵文字）のサイズ
+const onigiriSpeed = 3;  // 🍙 の落下速度
+const baseTeaSpeed = 2;  // 🍵 の基礎落下速度（currentTeaSpeedで加速）
+const sakeSpeed = 3;     // 🍶 の基礎速度
 
 let truckX;  // トラックの x 座標
 let bgm;     // BGM用オーディオエレメント
 
 // --- p5.js setup ---
 function setup() {
-  // キャンバス作成（背景は透明に）
+  // キャンバス作成（背景は透明）
   const cnv = createCanvas(canvasWidth, canvasHeight);
   cnv.parent('game-container');
   clear();
   
-  // 初期トラック位置
   truckX = canvasWidth / 2;
   
   // localStorage からハイスコア取得
@@ -45,17 +45,16 @@ function setup() {
   
   textAlign(CENTER, CENTER);
   
-  // BGM エレメント取得
+  // BGMエレメント取得
   bgm = document.getElementById('bgm');
 }
 
 // --- p5.js draw ループ ---
 function draw() {
-  // キャンバスをクリア（背景は下層の CSS グラデーションが見えるように透明）
   clear();
   
   if (gameState === "playing") {
-    // --- トラックの操作 ---
+    // --- トラック操作（PC: mouseX, スマホ: touches[0].x） ---
     if (touches.length > 0) {
       truckX = touches[0].x;
     } else {
@@ -63,41 +62,40 @@ function draw() {
     }
     truckX = constrain(truckX, truckWidth / 2, canvasWidth - truckWidth / 2);
     
-    // --- 🍙（おにぎり）のスポーン ---
+    // --- 🍙 のスポーン（上限チェック付き） ---
     onigiriSpawnTimer++;
     if (onigiriSpawnTimer >= onigiriSpawnInterval) {
-      spawnOnigiri();
+      if (onigiriList.length < maxOnigiriCount) {
+        spawnOnigiri();
+      }
       onigiriSpawnTimer = 0;
     }
     
     // --- 落下アイテムの更新・描画・衝突判定 ---
-    // 🍙（おにぎり）: キャッチ時にスコア+1・🍵速度上昇・閾値到達で追加アイテム
+    // 🍙（おにぎり）：キャッチ時にスコア＋、お茶の速度加速、一定スコアで追加アイテム
     for (let i = onigiriList.length - 1; i >= 0; i--) {
       const item = onigiriList[i];
       item.update();
       item.draw();
       if (checkCollision(item, truckX, canvasHeight - truckHeight / 2)) {
-        // キャッチ成功
         onigiriList.splice(i, 1);
         score++;
         currentTeaSpeed += 0.1;
-        // スコアに応じて新たな🍵追加（5点ごと）
-        if (score >= teaThreshold) {
+        // スコアが閾値に達したときのみ新たなお茶・酒を追加（＝1個ずつ）
+        if (score === teaThreshold) {
           spawnTea();
           teaThreshold += 5;
         }
-        // スコアに応じて新たな🍶追加（10点ごと）
-        if (score >= sakeThreshold) {
+        if (score === sakeThreshold) {
           spawnSake();
           sakeThreshold += 10;
         }
       } else if (item.y - item.radius > canvasHeight) {
-        // 画面外に出たら削除
         onigiriList.splice(i, 1);
       }
     }
     
-    // 🍵（お茶）: 衝突で即ゲームオーバー
+    // 🍵（お茶）：衝突で即ゲームオーバー
     for (let i = teaList.length - 1; i >= 0; i--) {
       const item = teaList[i];
       item.update();
@@ -109,7 +107,7 @@ function draw() {
       }
     }
     
-    // 🍶（酒）: 衝突で即ゲームオーバー（左右バウンド付き）
+    // 🍶（酒）：左右バウンド付きで落下、衝突で即ゲームオーバー
     for (let i = sakeList.length - 1; i >= 0; i--) {
       const item = sakeList[i];
       item.update();
@@ -121,7 +119,7 @@ function draw() {
       }
     }
     
-    // --- トラックの描画 ---
+    // --- トラック描画 ---
     drawTruck();
     
     // --- スコア表示（右上） ---
@@ -132,7 +130,6 @@ function draw() {
 }
 
 // --- FallingItem クラス ---
-// 落下アイテム（🍙、🍵、🍶）の基底クラス
 class FallingItem {
   constructor(x, y, type) {
     this.x = x;
@@ -144,7 +141,6 @@ class FallingItem {
     } else if (this.type === "tea") {
       this.speedY = currentTeaSpeed;
     } else if (this.type === "sake") {
-      // 30°～45°の角度をランダムに決定し、左右どちらかにバウンド
       const angleDeg = random(30, 45);
       const angle = radians(angleDeg);
       const baseSpeed = sakeSpeed;
@@ -184,8 +180,8 @@ class FallingItem {
 }
 
 // --- 衝突判定 ---
-// トラック（🚛）は truckX, truckY を中心とする矩形（幅 truckWidth, 高さ truckHeight）
-// 落下アイテムは円として判定
+// トラックは truckX, truckY を中心とする矩形（幅 truckWidth, 高さ truckHeight）
+// 落下アイテムは円形として判定
 function checkCollision(item, truckX, truckY) {
   let dx = abs(item.x - truckX);
   let dy = abs(item.y - truckY);
@@ -201,7 +197,6 @@ function checkCollision(item, truckX, truckY) {
 function drawTruck() {
   textAlign(CENTER, CENTER);
   textSize(itemSize);
-  // トラックは画面下部中央に配置（truckWidth, truckHeight は当たり判定用）
   text("🚛", truckX, canvasHeight - truckHeight / 2);
 }
 
@@ -250,13 +245,13 @@ function showGameOverScreen() {
   if (scoreSpan) scoreSpan.textContent = "Score: " + score;
   if (highScoreSpan) highScoreSpan.textContent = "High Score: " + highScore;
   
-  // 50%の確率でゲームオーバー画像を表示
+  // 50%の確率でプロモーション画像を表示（読み込み完了後に表示）
   const promoDiv = document.getElementById("game-over-image");
   const promoImg = document.getElementById("promo-image");
   const showPromo = random() < 0.5;
   if (showPromo) {
+    promoImg.style.visibility = "hidden";
     promoDiv.style.display = "block";
-    // 画像1 と 画像2 を50%ずつ選択
     if (random() < 0.5) {
       promoImg.src = "pr_image1.png";
       promoImg.onclick = function() {
@@ -268,25 +263,35 @@ function showGameOverScreen() {
         window.open("https://www.instagram.com/47markets/", "_blank");
       };
     }
+    promoImg.onload = function() {
+      promoImg.style.visibility = "visible";
+    };
   } else {
     promoDiv.style.display = "none";
   }
   
-  // 4秒間のカウントダウン表示
+  // --- カウントダウンの表示とアニメーション ---
   const countdownDiv = document.getElementById("countdown");
   countdownDiv.style.display = "block";
   let countdown = 4;
   countdownDiv.textContent = countdown;
+  // アニメーションを付与
+  countdownDiv.classList.remove("countdown-animation");
+  void countdownDiv.offsetWidth;  // reflowでアニメーション再起動
+  countdownDiv.classList.add("countdown-animation");
+  
   const countdownInterval = setInterval(() => {
     countdown--;
     if (countdown <= 0) {
       clearInterval(countdownInterval);
       countdownDiv.style.display = "none";
       promoDiv.style.display = "none";
-      // カウントダウン終了後、再スタート用ボタン群を表示
       document.getElementById("restart-buttons").style.display = "block";
     } else {
       countdownDiv.textContent = countdown;
+      countdownDiv.classList.remove("countdown-animation");
+      void countdownDiv.offsetWidth;
+      countdownDiv.classList.add("countdown-animation");
     }
   }, 1000);
 }
@@ -315,7 +320,10 @@ function startGame() {
   onigiriSpawnTimer = 0;
   gameState = "playing";
   
-  // BGM再生（ユーザー操作後なら自動再生制限回避）
+  // ゲーム開始時に必ず初期の🍵をスポーン
+  spawnTea();
+  
+  // BGM再生（ユーザー操作後の自動再生制限対応）
   if (bgm) {
     bgm.play().catch(err => {
       console.log("BGM再生エラー:", err);
@@ -324,7 +332,6 @@ function startGame() {
 }
 
 function restartGame() {
-  // 再スタート用ボタン群非表示
   const restartButtons = document.getElementById("restart-buttons");
   if (restartButtons) {
     restartButtons.style.display = "none";
@@ -336,7 +343,7 @@ function restartGame() {
   startGame();
 }
 
-// --- イベントリスナー設定 ---
+// --- イベントリスナー ---
 document.getElementById("start-button").addEventListener("click", function(){
   startGame();
 });
