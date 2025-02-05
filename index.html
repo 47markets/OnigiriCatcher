@@ -146,6 +146,11 @@
     
     // ゲームオーバー画像を 4 秒間表示
     let isPrImage1 = Math.random() < 0.5;
+let gameOverImage = document.getElementById("gameOverImage");
+gameOverImage.src = isPrImage1 ? "pr_image1.png" : "pr_image2.png";
+gameOverImage.onclick = function() {
+    window.open(isPrImage1 ? "https://shop.47markets.org/" : "https://www.instagram.com/47markets/", "_blank");
+};
 document.getElementById("gameOverImage").src = isPrImage1 ? "pr_image1.png" : "pr_image2.png";
 document.getElementById("gameOverImage").style.display = "block";
     let countdown = 4;
@@ -160,9 +165,21 @@ document.getElementById("gameOverImage").style.display = "block";
     let playAgainButton = document.getElementById("playAgainButton");
     let instagramButton = document.getElementById("instagramButton");
     let giftButton = document.getElementById("giftButton");
+    let gameOverImage = document.getElementById("gameOverImage");
+    
+    if (gameOverImage) {
+        gameOverImage.style.display = "none";
+    }
     
     if (playAgainButton && instagramButton && giftButton) {
-    document.getElementById("gameOverImage").style.display = "none";
+    let playAgainButton = document.getElementById("playAgainButton");
+    let instagramButton = document.getElementById("instagramButton");
+    let giftButton = document.getElementById("giftButton");
+    
+    if (playAgainButton && instagramButton && giftButton) {
+    if (gameOverImage) {
+    gameOverImage.style.display = "none";
+}
     document.getElementById("countdownTimer").style.display = "none";
     document.getElementById("instagramButton").classList.remove("hidden");
     document.getElementById("giftButton").classList.remove("hidden");
@@ -174,7 +191,10 @@ document.getElementById("gameOverImage").style.display = "block";
     document.getElementById("countdownTimer").style.display = "none";
     document.getElementById("instagramButton").classList.remove("hidden");
     document.getElementById("giftButton").classList.remove("hidden");
-    document.getElementById("playAgainButton").classList.remove("hidden");
+            playAgainButton.classList.remove("hidden");
+        instagramButton.classList.remove("hidden");
+        giftButton.classList.remove("hidden");
+    }
     countdown = 4; // ２度目以降もカウントダウンをリセット
     document.getElementById("playAgainButton").classList.remove("hidden");
     document.getElementById("instagramButton").classList.remove("hidden");
