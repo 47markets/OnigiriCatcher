@@ -16,7 +16,7 @@
       background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);
       font-family: sans-serif;
     }
-    /* p5.jsキャンバスを横中央に配置 */
+    /* p5.jsキャンバスを横中央に配置し、背景は透明 */
     canvas {
       display: block;
       position: absolute;
@@ -24,6 +24,7 @@
       left: 50%;
       transform: translateX(-50%);
       z-index: 0;
+      background-color: transparent !important;
     }
     /* タイトル画面／ゲームオーバー画面の共通スタイル */
     .screen {
@@ -181,8 +182,8 @@
      ***************************************/
     function setup() {
       canvas = createCanvas(windowWidth * 0.9, windowHeight);
-      // キャンバス背景を透明にして下層のCSS背景を表示
-      canvas.style('background', 'transparent');
+      // キャンバス背景を明示的に透明に設定
+      canvas.style('background-color', 'transparent');
       highScore = localStorage.getItem("highScore") ? parseInt(localStorage.getItem("highScore")) : 0;
       player = new Player();
       onigiri = new Item(random(30, width - 30), -30, '🍙', 5);
@@ -196,7 +197,7 @@
     }
     
     function draw() {
-      // clear()で前フレームをクリアし、下層背景（緑グラデーション）を透過させる
+      // clear() でキャンバスを透明にクリア
       clear();
       if (gameStarted && !gameOver) {
         player.update();
