@@ -4,27 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Onigiri Catcher</title>
-  <!-- p5.js のライブラリ -->
+  <!-- p5.js ライブラリ -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
   <style>
-    /* ページ全体のスタイル */
+    /* 全体の背景：緑系グラデーション */
     body {
       margin: 0;
       overflow: hidden;
       touch-action: none;
       overscroll-behavior: none;
-      background: #888; /* ゲームプレイ時はグレー */
+      background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);
       font-family: sans-serif;
     }
-    /* p5.js が生成するキャンバスは画面全体に表示 */
+    /* p5.jsキャンバスを横中央に配置 */
     canvas {
       display: block;
       position: absolute;
       top: 0;
-      left: 0;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 0;
     }
-    /* 画面（タイトル／ゲームオーバー）の共通スタイル */
+    /* タイトル画面／ゲームオーバー画面の共通スタイル */
     .screen {
       position: absolute;
       top: 50%;
@@ -82,8 +83,8 @@
     <img id="gameOverImage" src="" alt="Game Over Image" style="width: 80%; max-width: 300px; margin: 0 auto; display: none; cursor: pointer;">
     <p id="countdownTimer" style="font-size: 16px; margin-top: 10px;"></p>
     <button class="button hidden" id="playAgainButton" onclick="restartGame()">Play Again</button>
-    <button class="button hidden" id="instagramButton" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">４７市ボタン</button>
-    <button class="button hidden" id="giftButton" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフトボタン</button>
+    <button class="button hidden" id="instagramButton" onclick="window.open('https://www.instagram.com/47markets/', '_blank')">４７市</button>
+    <button class="button hidden" id="giftButton" onclick="window.open('https://shop.47markets.org/', '_blank')">４７市ギフト</button>
   </div>
   
   <!-- BGM -->
@@ -109,7 +110,7 @@
     /***************************************
      * クラス定義
      ***************************************/
-    // ベースクラス：Item（おにぎり、茶などの共通処理）
+    // 基底クラス：Item（おにぎり、🍵 など）
     class Item {
       constructor(x, y, symbol, speed) {
         this.x = x;
@@ -134,22 +135,17 @@
       }
     }
     
-    // 🍶クラス：Sake（固定角度でバウンド）
+    // 🍶 クラス：固定角度でバウンド
     class Sake extends Item {
       constructor(x, y) {
-        // 垂直速度は5固定
         super(x, y, '🍶', 5);
-        // 30°～45°の角度（ラジアン）をランダムに選択
         let angle = random(radians(30), radians(45));
-        // 水平方向の速度 = 垂直速度 × tan(angle)
         let speedX = this.speed * tan(angle);
-        // 左右どちらかに進む（符号をランダムに）
         this.speedX = random([1, -1]) * speedX;
       }
       fall() {
         this.y += this.speed;
         this.x += this.speedX;
-        // 横端に達したらバウンド
         if (this.x < 0 || this.x > width - 30) {
           this.speedX *= -1;
         }
@@ -163,11 +159,10 @@
     class Player {
       constructor() {
         this.x = width / 2;
-        this.y = height - 50; // 下部固定
+        this.y = height - 50;
         this.symbol = '🚛';
       }
       update() {
-        // PC: mouseX、スマホ: touches[0].x を使用
         if (touches.length > 0) {
           this.x = constrain(touches[0].x, 0, width - 30);
         } else {
@@ -186,22 +181,23 @@
      ***************************************/
     function setup() {
       canvas = createCanvas(windowWidth * 0.9, windowHeight);
-      canvas.style('display', 'block');
-      // localStorage からハイスコアを取得
+      // キャンバス背景を透明にして下層のCSS背景を表示
+      canvas.style('background', 'transparent');
       highScore = localStorage.getItem("highScore") ? parseInt(localStorage.getItem("highScore")) : 0;
       player = new Player();
       onigiri = new Item(random(30, width - 30), -30, '🍙', 5);
-      noLoop(); // ゲーム開始前はループ停止
+      // ゲーム開始時は必ず1つの🍵が降る
+      teaList = [ new Item(random(30, width - 30), -30, '🍵', teaSpeed) ];
+      noLoop();
     }
     
-    // 画面サイズ変更時の対応
     function windowResized() {
       resizeCanvas(windowWidth * 0.9, windowHeight);
     }
     
-    // メインのゲームループ
     function draw() {
-      background(128); // グレー背景
+      // clear()で前フレームをクリアし、下層背景（緑グラデーション）を透過させる
+      clear();
       if (gameStarted && !gameOver) {
         player.update();
         player.show();
@@ -219,7 +215,6 @@
           sake.show();
         }
         
-        // 左上にスコア表示
         textSize(20);
         fill(255);
         text(`Score: ${score}`, 20, 30);
@@ -233,30 +228,27 @@
      ***************************************/
     // 衝突判定
     function checkCollisions() {
-      // おにぎりとの衝突（キャッチ時）
       if (dist(player.x, player.y, onigiri.x, onigiri.y) < 30) {
         score++;
         teaSpeed += 0.1;
         onigiri.reset();
-        
-        // スコアが5の倍数で🍵を追加
-        if (score % 5 === 0) {
+        // スコアが5点以上かつ5点ごとに🍵を追加
+        if (score % 5 === 0 && score > 0) {
           teaList.push(new Item(random(30, width - 30), -30, '🍵', teaSpeed));
         }
-        // スコアが10の倍数で🍶を追加
-        if (score % 10 === 0) {
+        // スコア10点以上かつ10点ごとに🍶を追加
+        if (score % 10 === 0 && score > 0) {
           sakeList.push(new Sake(random(30, width - 30), -30));
         }
       }
       
-      // 🍵（お茶）との衝突判定
       for (let tea of teaList) {
         if (dist(player.x, player.y, tea.x, tea.y) < 30) {
           triggerGameOver();
           return;
         }
       }
-      // 🍶（酒）との衝突判定
+      
       for (let sake of sakeList) {
         if (dist(player.x, player.y, sake.x, sake.y) < 30) {
           triggerGameOver();
@@ -267,7 +259,7 @@
     
     // ゲームオーバー時の処理
     function triggerGameOver() {
-      if (gameOver) return;  // 二重実行防止
+      if (gameOver) return;
       gameOver = true;
       noLoop();
       
@@ -279,7 +271,6 @@
       const finalScoreElem = document.getElementById("finalScore");
       if (finalScoreElem) finalScoreElem.textContent = score;
       
-      // ハイスコア更新
       if (score > highScore) {
         highScore = score;
         localStorage.setItem("highScore", highScore);
@@ -300,7 +291,6 @@
       if (gameOverImage) {
         gameOverImage.src = imageURL;
         gameOverImage.style.display = "block";
-        // 画像クリックでリンクを新しいタブで開く
         gameOverImage.onclick = function() {
           window.open(imageLink, '_blank');
         };
@@ -327,7 +317,6 @@
           if (countdownElem) {
             countdownElem.style.display = "none";
           }
-          // 4秒後に各ボタンを表示
           const playAgainButton = document.getElementById("playAgainButton");
           const instagramButton = document.getElementById("instagramButton");
           const giftButton = document.getElementById("giftButton");
@@ -345,17 +334,16 @@
       const gameOverScreen = document.getElementById("gameOverScreen");
       if (gameOverScreen) gameOverScreen.classList.add("hidden");
       
-      // ゲーム状態の初期化
       score = 0;
       teaSpeed = 5;
       gameOver = false;
       gameStarted = true;
-      teaList = [];
+      // ゲーム開始時に必ず1つの🍵が降る
+      teaList = [ new Item(random(30, width - 30), -30, '🍵', teaSpeed) ];
       sakeList = [];
       player = new Player();
       onigiri = new Item(random(30, width - 30), -30, '🍙', 5);
       
-      // ゲームオーバー時に表示されたボタンを非表示にする
       const playAgainButton = document.getElementById("playAgainButton");
       if (playAgainButton) playAgainButton.classList.add("hidden");
       const instagramButton = document.getElementById("instagramButton");
@@ -363,7 +351,6 @@
       const giftButton = document.getElementById("giftButton");
       if (giftButton) giftButton.classList.add("hidden");
       
-      // ユーザーの操作後にBGM再生（ブラウザの自動再生制限対応）
       const bgm = document.getElementById("bgm");
       if (bgm && bgm.play) {
         bgm.play().catch(error => { console.log("BGM play error:", error); });
