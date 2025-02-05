@@ -157,12 +157,20 @@ document.getElementById("gameOverImage").style.display = "block";
         if (countdown === 0) {
     clearInterval(countdownInterval);
     setTimeout(() => {
+    let playAgainButton = document.getElementById("playAgainButton");
+    let instagramButton = document.getElementById("instagramButton");
+    let giftButton = document.getElementById("giftButton");
+    
+    if (playAgainButton && instagramButton && giftButton) {
     document.getElementById("gameOverImage").style.display = "none";
     document.getElementById("countdownTimer").style.display = "none";
     document.getElementById("instagramButton").classList.remove("hidden");
     document.getElementById("giftButton").classList.remove("hidden");
-    document.getElementById("playAgainButton").classList.remove("hidden");
-}, 100);
+            playAgainButton.classList.remove("hidden");
+        instagramButton.classList.remove("hidden");
+        giftButton.classList.remove("hidden");
+    }
+}, 500);
     document.getElementById("countdownTimer").style.display = "none";
     document.getElementById("instagramButton").classList.remove("hidden");
     document.getElementById("giftButton").classList.remove("hidden");
