@@ -5,11 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Onigiri Catcher</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- プロモーション画像のプリロード -->
+  <link rel="preload" href="pr_image1.png" as="image">
+  <link rel="preload" href="pr_image2.png" as="image">
   <!-- p5.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
 </head>
 <body>
-  <!-- ゲーム背景の下層グラデーションは CSS で設定 -->
   <div id="game-container">
     <!-- タイトル画面 -->
     <div id="title-screen" class="overlay">
@@ -27,7 +29,7 @@
         <span id="high-score">High Score: 0</span>
       </div>
       <div id="game-over-image" style="display: none;">
-        <img id="promo-image" src="" alt="Promo" style="cursor: pointer;">
+        <img id="promo-image" src="" alt="Promo Image" style="cursor: pointer;">
       </div>
       <div id="countdown" style="display: none;">4</div>
       <div id="restart-buttons" style="display: none;">
